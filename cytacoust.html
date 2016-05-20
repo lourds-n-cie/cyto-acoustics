@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Cyto Acoustics</title>
+    <script type="text/javascript" src="cytoacoustics.js"></script>
+  </head>
+  <body>
+    <script type="text/javascript">
+      var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      var oscillator = audioCtx.createOscillator();
+      var gainNode = audioCtx.createGain();
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      var initialFreq = 1000;
+      var initialVol = 0.0005;
+      var initialDetune = 100;
+      oscillator.type = 'square';
+      oscillator.frequency.value = initialFreq;
+      oscillator.detune.value = initialDetune;
+      oscillator.start(0);
+      gainNode.gain.value = initialVol;
+
+      // var app = Elm.Cytoacoustics.fullscreen();
+      // app.ports.audio.subscribe(function(soundModel) {
+      //   gainNode.gain.value = soundModel.gain;
+      //   oscillator.frequency.value = soundModel.frequency;
+      //   oscillator.detune.value = soundModel.detune;
+      // });
+    </script>
+  </body>
+</html>
