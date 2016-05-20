@@ -1,1 +1,1 @@
-elm make .\src\cyto-acoustics.elm --output=index.html
+elm make .\src\cyto-acoustics.elm --output=target\cyto-acoustics.js
