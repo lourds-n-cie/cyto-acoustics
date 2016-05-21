@@ -16,9 +16,11 @@
       <section class="tools">
         <button id="reset">Reset &orarr;</button>
         <button id="nextStep" onclick="javascript:alert('Not implemented...');">Next &#9731;</button>
-        <button id="play" onclick="javascript:alert('Not implemented...');">&#9658; Play</button>
-        <button id="pause" onclick="javascript:alert('Not implemented...');" disabled>&#10074;&#10074; Pause</button>
-        
+      </section>
+      <section>
+        <textarea id="notesToPlay"></textarea>
+        <button id="play">&#9658; Play</button>
+        <button id="pause" style="display:none;">&#10074;&#10074; Pause</button>
       </section>
     </div>
     <div class="col col2-3">
@@ -34,8 +36,19 @@
       matrix.innerHTML ='';
       var app = Elm.Cytoacoustics.embed(matrix);
       document.getElementById('reset').addEventListener("click", function() {
-        console.log("on button");
         app.ports.reset.send("");
+      });
+      
+      
+      // music playback experiments
+      document.getElementById('play').addEventListener("click", function() {
+        document.getElementById('pause').style.display = 'inline';
+        document.getElementById('play').style.display = 'none';
+      });
+      
+      document.getElementById('pause').addEventListener("click", function() {
+        document.getElementById('play').style.display = 'inline';
+        document.getElementById('pause').style.display = 'none';
       });
     });
       // var context = new AudioContext();
