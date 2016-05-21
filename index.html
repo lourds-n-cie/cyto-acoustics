@@ -11,30 +11,30 @@
 </head>
 
 <body>
-<header>
-    <h1>Cyto-Acoustics</h1>
-</header>
-<div class="container">
-    <div class="col col1-3">
-        <section class="tools">
-            <button id="reset">Reset &orarr;</button>
-            <button id="nextStep">Next &#9731;</button>
-        </section>
-        <section>
-            <textarea id="notesToPlay" cols="40" rows="15"></textarea>
-            <br/>
-            <button id="play">&#9658; Play</button>
-            <button id="pause" style="display:none;">&#10074;&#10074; Pause</button>
-        </section>
+    <header>
+        <h1>Cyto-Acoustics</h1>
+    </header>
+    <div class="container">
+        <div class="col col1-3">
+            <section class="tools">
+                <button id="reset">Reset &orarr;</button>
+                <button id="nextStep">Next &#9731;</button>
+            </section>
+            <section>
+                <textarea id="notesToPlay" cols="40" rows="15"></textarea>
+                <br/>
+                <button id="play">&#9658; Play</button>
+                <button id="pause" style="display:none;">&#10074;&#10074; Pause</button>
+            </section>
+        </div>
+        <div class="col col2-3">
+            <div id="matrix" class="matrix">Loading ...</div>
+        </div>
     </div>
-    <div class="col col2-3">
-        <div id="matrix" class="matrix">Loading ...</div>
-    </div>
-</div>
-<script type="text/javascript" src="assets/vendor/blip.min.js"></script>
-<script type="text/javascript" src="target/cyto-acoustics.js"></script>
-<script type="text/javascript">
-    document.addEventListener('DOMContentLoaded', function(event) {
+    <script type="text/javascript" src="assets/vendor/blip.min.js"></script>
+    <script type="text/javascript" src="target/cyto-acoustics.js"></script>
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function(event) {
 
         var matrix = document.getElementById('matrix');
         // remove loading message
@@ -70,21 +70,26 @@
             var coords = JSON.parse(document.getElementById('notesToPlay').value);
 
             var oscillators = createOscillatorsForCoords(audioCtx, coords);
-            oscillators.forEach(function(oscillator) {
-                oscillator.start();
-            });
+            startOscillators(audioCtx, oscillators);
 
             document.getElementById('pause').addEventListener("click", function(e) {
                 document.getElementById('play').style.display = 'inline';
                 document.getElementById('pause').style.display = 'none';
-                oscillators.forEach(function(oscillator) {
-                    oscillator.stop();
-                });
+                stopOscillators(audioCtx, oscillators);
 
                 // remove this handler
                 e.target.removeEventListener(e.type, arguments.callee);
             });
         });
+        
+        var previousOscillators = [];
+        app.ports.newCells.subscribe(function(newCells) {
+            stopOscillators(audioCtx, previousOscillators);
+            
+            previousOscillators = createOscillatorsForCoords(audioCtx, newCells);
+            startOscillators(audioCtx, previousOscillators);
+        });
+        
         // tibal's audio test -- END
 
         // kus' audio test -- START
@@ -129,7 +134,20 @@
       
       return result;
     }
-</script>
+    
+    function startOscillators(audioCtx, oscillators){
+        oscillators.forEach(function(oscillator) {
+            oscillator.start();
+        });
+    }
+    
+    function stopOscillators(audioCtx, oscillators){
+        oscillators.forEach(function(oscillator) {
+            oscillator.stop();
+        });
+    }
+
+    </script>
 </body>
 
 </html>
