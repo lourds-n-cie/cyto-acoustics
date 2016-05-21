@@ -78,8 +78,7 @@ button {
 
 .matrix table td:hover{
     background-image: none;
-    background-color: #FFFF33;
-    box-shadow: inset 1px 1px 1px 0px rgba(48,48,48,0.5);
+    background-color: #C0C0C0;
 }
 
 
