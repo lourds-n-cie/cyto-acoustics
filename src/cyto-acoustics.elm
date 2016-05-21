@@ -26,7 +26,7 @@ type alias Matrix = Array (Array Bool)
 type alias Model = { matrix: Matrix, clicked: Bool, size: Int, live: Bool }
 
 
-init :Int -> (Model, Cmd a)
+init : Int -> (Model, Cmd a)
 init size =
   (Model (Array.repeat size (Array.repeat size False)) False size False, Cmd.none)
 
@@ -71,7 +71,7 @@ updateHelper sw model =
 
 
 wasOff : Model -> Switch -> Cmd Msg
-wasOff { matrix, clicked } { row, col } =
+wasOff { matrix, clicked, size } { row, col } =
   let
     wasOff = getCellWithDefault True matrix row col
       |> not
