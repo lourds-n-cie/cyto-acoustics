@@ -39,13 +39,10 @@ header > h1{
 
 
 /* left bar  */
-.theme-picker {
-    display: inline-block;
-}
-
-.theme-picker label{
-    min-width: 4em;
-    display: inline-block;
+button {
+	padding: 0.3em;
+	font-weight: bold;
+	margin: 5px;
 }
 
 
