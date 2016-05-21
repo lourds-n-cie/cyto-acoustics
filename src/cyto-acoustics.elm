@@ -4,9 +4,9 @@ import Html exposing (..)
 import Html.App as Html
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick, onMouseEnter)
-import Time exposing (Time, second)
 import Array exposing (Array)
 import Debug exposing (log)
+import Time exposing (..)
 import Mouse
 
 
@@ -24,12 +24,12 @@ main =
 size = 16
 
 type alias Matrix = Array (Array Bool)
-type alias Model = { matrix: Matrix, clicked: Bool }
+type alias Model = { matrix: Matrix, clicked: Bool, live: Bool }
 
 
 init : (Model, Cmd a)
 init =
-  (Model (Array.repeat size (Array.repeat size False)) False, Cmd.none)
+  (Model (Array.repeat size (Array.repeat size False)) False False, Cmd.none)
 
 
 -- UPDATE
@@ -44,6 +44,8 @@ type Msg = SwitchMsg Switch
   | MickeyUp
   | Clear
   | NextStep
+  | Tick
+  | ToggleLive
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -60,6 +62,8 @@ update msg model =
     MickeyDown -> ( { model | clicked = True }, Cmd.none)
     MickeyUp -> ( { model | clicked = False }, Cmd.none)
     NextStep -> ( { model | matrix = nextGeneration model.matrix}, Cmd.none)
+    Tick -> ( if model.live then { model | matrix = nextGeneration model.matrix} else model, Cmd.none)
+    ToggleLive -> ( { model | live = not model.live }, Cmd.none)
 
 
 updateHelper : Switch -> Model -> (Model, Cmd Msg)
@@ -117,16 +121,22 @@ getCell matrix rowIdx colIdx =
 -- incoming values
 port reset : (String -> msg) -> Sub msg
 
+port toggleLive : (String -> msg) -> Sub msg
 
 port nextStep : (String -> msg) -> Sub msg
 
-
 port newCells : List (Int, Int) -> Cmd msg
-
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Sub.batch [ Mouse.downs (always MickeyDown), Mouse.ups (always MickeyUp), reset (always Clear), nextStep (always NextStep) ]
+  Sub.batch [
+     Mouse.downs (always MickeyDown),
+     Mouse.ups (always MickeyUp),
+     reset (always Clear),
+     nextStep (always NextStep),
+     every (500*millisecond) (always Tick),
+     toggleLive (always ToggleLive)
+  ]
 
 
 -- VIEW

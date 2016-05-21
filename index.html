@@ -11,30 +11,28 @@
 </head>
 
 <body>
-    <header>
-        <h1>Cyto-Acoustics</h1>
-    </header>
-    <div class="container">
-        <div class="col col1-3">
-            <section class="tools">
-                <button id="reset">Reset &orarr;</button>
-                <button id="nextStep">Next &#9731;</button>
-            </section>
-            <section>
-                <textarea id="notesToPlay" cols="40" rows="15"></textarea>
-                <br/>
-                <button id="play">&#9658; Play</button>
-                <button id="pause" style="display:none;">&#10074;&#10074; Pause</button>
-            </section>
-        </div>
-        <div class="col col2-3">
-            <div id="matrix" class="matrix">Loading ...</div>
-        </div>
+<header>
+    <h1>Cyto-Acoustics</h1>
+</header>
+<div class="container">
+    <div class="col col1-3">
+        <section class="tools">
+            <button id="reset">Reset</button>
+        </section>
+        <section>
+            <button id="nextStep">Next</button>
+            <button id="play">&#9658; Play</button>
+            <button id="pause" style="display:none;">&#10074;&#10074; Pause</button>
+        </section>
     </div>
-    <script type="text/javascript" src="assets/vendor/blip.min.js"></script>
-    <script type="text/javascript" src="target/cyto-acoustics.js"></script>
-    <script type="text/javascript">
-        document.addEventListener('DOMContentLoaded', function(event) {
+    <div class="col col2-3">
+        <div id="matrix" class="matrix">Loading ...</div>
+    </div>
+</div>
+<script type="text/javascript" src="assets/vendor/blip.min.js"></script>
+<script type="text/javascript" src="target/cyto-acoustics.js"></script>
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function(event) {
 
         var matrix = document.getElementById('matrix');
         // remove loading message
@@ -46,50 +44,35 @@
             app.ports.reset.send("");
         });
 
-        //next generation
+        //next generation -- START
         document.getElementById('nextStep').addEventListener("click", function() {
             app.ports.nextStep.send("");
         });
 
-        // tibal's audio test -- START
-
-        var notes = [
-            [0, 0], [3, 3], [15, 15],
-        ];
-
-        document.getElementById('notesToPlay').value = JSON.stringify(notes);
-
-        // create web audio api context
-        var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-        // music playback experiments
         document.getElementById('play').addEventListener("click", function() {
             document.getElementById('pause').style.display = 'inline';
             document.getElementById('play').style.display = 'none';
 
-            var coords = JSON.parse(document.getElementById('notesToPlay').value);
-
-            var oscillators = createOscillatorsForCoords(audioCtx, coords);
-            startOscillators(audioCtx, oscillators);
+            app.ports.toggleLive.send("");
 
             document.getElementById('pause').addEventListener("click", function(e) {
                 document.getElementById('play').style.display = 'inline';
                 document.getElementById('pause').style.display = 'none';
-                stopOscillators(audioCtx, oscillators);
+
+                app.ports.toggleLive.send("");
 
                 // remove this handler
                 e.target.removeEventListener(e.type, arguments.callee);
             });
         });
-        
-        var previousOscillators = [];
-        app.ports.newCells.subscribe(function(newCells) {
-            stopOscillators(audioCtx, previousOscillators);
-            
-            previousOscillators = createOscillatorsForCoords(audioCtx, newCells);
-            startOscillators(audioCtx, previousOscillators);
-        });
-        
+
+        // next generation -- END
+
+        // tibal's audio test -- START
+
+        // create web audio api context
+        var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
         // tibal's audio test -- END
 
         // kus' audio test -- START
@@ -97,7 +80,7 @@
         blip.sampleLoader()
           .samples({ 'la': 'assets/la_stretched.wav' })
           .load();
-          
+
         app.ports.newCells.subscribe(function(newCells) {
           blip.clip()
             .sample('la')
@@ -106,10 +89,10 @@
 
         // kus' audio test -- END
     });
-    
+
     function createOscillatorsForCoords(audioCtx, coordsArray){
       var result = [];
-      
+
       coordsArray.forEach(function(element, index, array){
         var baseFrequency = 440; // A 440 Hz
         var x = element[0];
@@ -117,13 +100,13 @@
         var frequency = baseFrequency *  Math.pow(2, x / 12);
         var stereoPanning = (y - 7.5) / 7.5
         console.log({x : x, y:y, frequency : frequency, pan: stereoPanning})
-        
-        
+
+
         // create Oscillator node
         var oscillator = audioCtx.createOscillator();
         oscillator.type = 'square';
         oscillator.frequency.value = frequency; // value in hertz
-        
+
         // add a stereo panner to move sound left or right
         var panNode = audioCtx.createStereoPanner();
         panNode.pan.value = stereoPanning;
@@ -131,16 +114,16 @@
         panNode.connect(audioCtx.destination);
         result.push(oscillator);
       });
-      
+
       return result;
     }
-    
+
     function startOscillators(audioCtx, oscillators){
         oscillators.forEach(function(oscillator) {
             oscillator.start();
         });
     }
-    
+
     function stopOscillators(audioCtx, oscillators){
         oscillators.forEach(function(oscillator) {
             oscillator.stop();
