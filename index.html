@@ -1,12 +1,22 @@
 <!DOCTYPE HTML>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Cellular acoustics</title>
-    <link href="assets/main.css" rel="stylesheet">
-  </head>
-  <body>
-    <script type="text/javascript">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Cellular acoustics</title>
+  <link href="assets/vendor/normalize.css" rel="stylesheet">
+  <link href="assets/main.css" rel="stylesheet">
+</head>
+
+<body>
+  <header>
+    <h1>Cyto-Acoustics</h1>
+  </header>
+  <div class="container">
+    <div id="matrix" class="matrix">Loading ...</div>
+  </div>
+  <script type="text/javascript" src="target/cyto-acoustics.js"></script>
+  <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function(event) { 
       var matrix = document.getElementById('matrix');
       // remove loading message
@@ -44,10 +54,7 @@
       //   oscillator.frequency.value = ???;
       //   oscillator.detune.value = ???;
       // });
-    </script>
-    <div class="container">
-      <div id="matrix">Loading ...</div>
-    </div>
-    <script type="text/javascript" src="target/cyto-acoustics.js"></script>
-  </body>
+  </script>
+</body>
+
 </html>

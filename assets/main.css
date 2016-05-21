@@ -1,3 +1,20 @@
-body{
-    background-color: pink;
+
+.matrix table{
+    empty-cells: show;
+    border-spacing: 0.3em;
 }
+
+.matrix table td{    
+    border: 1px solid #C0C0C0;
+    width: 1em;
+    height: 1em;
+}
+
+.matrix table td.off{    
+    background-color: #C0C0C0;
+}
+
+.matrix table td.on{    
+    background-color: #303030;
+}
+
