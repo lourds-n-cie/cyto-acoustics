@@ -2,104 +2,114 @@
 <html>
 
 <head>
-  <meta charset="UTF-8">
-  <title>Cellular acoustics</title>
-  <link href="assets/vendor/normalize.css" rel="stylesheet">
-  <link href="assets/main.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Cellular acoustics</title>
+    <link href="assets/vendor/normalize.css" rel="stylesheet">
+    <link href="assets/main.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
 </head>
 
 <body>
-  <header>
+<header>
     <h1>Cyto-Acoustics</h1>
-  </header>
-  <div class="container">
+</header>
+<div class="container">
     <div class="col col1-3">
-      <section class="tools">
-        <button id="reset">Reset &orarr;</button>
-        <button id="nextStep" onclick="javascript:alert('Not implemented...');">Next &#9731;</button>
-      </section>
-      <section>
-        <textarea id="notesToPlay" cols="40" rows="15"></textarea>
-        <br/>
-        <button id="play">&#9658; Play</button>
-        <button id="pause" style="display:none;">&#10074;&#10074; Pause</button>
-      </section>
+        <section class="tools">
+            <button id="reset">Reset &orarr;</button>
+            <button id="nextStep">Next &#9731;</button>
+        </section>
+        <section>
+            <textarea id="notesToPlay" cols="40" rows="15"></textarea>
+            <br/>
+            <button id="play">&#9658; Play</button>
+            <button id="pause" style="display:none;">&#10074;&#10074; Pause</button>
+        </section>
     </div>
     <div class="col col2-3">
-      <div id="matrix" class="matrix">Loading ...</div>
+        <div id="matrix" class="matrix">Loading ...</div>
     </div>
-  </div>
-  <script type="text/javascript" src="target/cyto-acoustics.js"></script>
-  <script type="text/javascript">
+</div>
+<script type="text/javascript" src="target/cyto-acoustics.js"></script>
+<script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function(event) {
 
-      var matrix = document.getElementById('matrix');
-      // remove loading message
-      matrix.innerHTML ='';
-      var app = Elm.Cytoacoustics.embed(matrix);
-      document.getElementById('reset').addEventListener("click", function() {
-        app.ports.reset.send("");
-      });
-      
-      var notes = [
-          [0, 0],
-          [3, 3],
-          [15, 15],
-      ];
-      
-      document.getElementById('notesToPlay').value = JSON.stringify(notes);
-      
-      // create web audio api context
-      var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      
-      // music playback experiments
-      document.getElementById('play').addEventListener("click", function() {
-        document.getElementById('pause').style.display = 'inline';
-        document.getElementById('play').style.display = 'none';
-        
-        var coords = JSON.parse( document.getElementById('notesToPlay').value );
-        
-        var oscillators = createOscillatorsForCoords(audioCtx, coords);
-        oscillators.forEach(function(oscillator){
-          oscillator.start();
+        var matrix = document.getElementById('matrix');
+        // remove loading message
+        matrix.innerHTML = '';
+        var app = Elm.Cytoacoustics.embed(matrix);
+
+        // Clear action
+        document.getElementById('reset').addEventListener("click", function() {
+            app.ports.reset.send("");
         });
 
-        
-        document.getElementById('pause').addEventListener("click", function(e) {
-          document.getElementById('play').style.display = 'inline';
-          document.getElementById('pause').style.display = 'none';
-          oscillators.forEach(function(oscillator){
-            oscillator.stop();
-          });
-          
-          // remove this handler
-	        e.target.removeEventListener(e.type, arguments.callee);
+        //next generation
+        document.getElementById('nextStep').addEventListener("click", function() {
+            app.ports.nextStep.send("");
         });
-      });     
-      
+
+        var notes = [
+            [0, 0], [3, 3], [15, 15],
+        ];
+
+        document.getElementById('notesToPlay').value = JSON.stringify(notes);
+
+        // create web audio api context
+        var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        // music playback experiments
+        document.getElementById('play').addEventListener("click", function() {
+            document.getElementById('pause').style.display = 'inline';
+            document.getElementById('play').style.display = 'none';
+
+            var coords = JSON.parse(document.getElementById('notesToPlay').value);
+
+            var oscillators = createOscillatorsForCoords(audioCtx, coords);
+            oscillators.forEach(function(oscillator) {
+                oscillator.start();
+            });
+
+            document.getElementById('pause').addEventListener("click", function(e) {
+                document.getElementById('play').style.display = 'inline';
+                document.getElementById('pause').style.display = 'none';
+                oscillators.forEach(function(oscillator) {
+                    oscillator.stop();
+                });
+
+                // remove this handler
+                e.target.removeEventListener(e.type, arguments.callee);
+            });
+        });
+
     });
-    
-    function createOscillatorsForCoords(audioCtx, coordsArray){
-      var result = [];
-      
-      coordsArray.forEach(function(element, index, array){
-        var baseFrequency = 440; // A 440 Hz
-        var x = element[0];
-        var y = element[1];
-        var frequency = baseFrequency *  Math.pow(2, x / 12);
-        console.log({x : x, y:y, frequency : frequency})
-        // create Oscillator node
-        var oscillator = audioCtx.createOscillator();
-        oscillator.type = 'square';
-        oscillator.frequency.value = frequency; // value in hertz
-        oscillator.connect(audioCtx.destination);
-        
-        result.push(oscillator);
-      });
-      
-      return result;
+
+    function createOscillatorsForCoords(audioCtx, coordsArray) {
+        var result = [];
+
+        coordsArray.forEach(function(element, index, array) {
+            var baseFrequency = 440; // A 440 Hz
+            var x = element[0];
+            var y = element[1];
+            var frequency = baseFrequency * Math.pow(2, x / 12);
+            console.log({
+                x: x,
+                y: y,
+                frequency: frequency
+            })
+            // create Oscillator node
+            var oscillator = audioCtx.createOscillator();
+            oscillator.type = 'square';
+            oscillator.frequency.value = frequency; // value in hertz
+            oscillator.connect(audioCtx.destination);
+
+            result.push(oscillator);
+        });
+
+        return result;
     }
-  </script>
+</script>
 </body>
 
 </html>

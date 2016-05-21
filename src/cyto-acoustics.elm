@@ -2,9 +2,8 @@ port module Cytoacoustics exposing (..)
 
 import Html exposing (..)
 import Html.App as Html
+import Html.Attributes exposing (class)
 import Html.Events exposing (onClick, onMouseEnter)
-import Svg exposing (..)
-import Svg.Attributes exposing (..)
 import Time exposing (Time, second)
 import Array exposing (Array)
 import Debug exposing (log)
@@ -23,7 +22,8 @@ main =
 -- MODEL
 
 
-type alias Model = { matrix: Array (Array Bool), clicked: Bool }
+type alias Matrix = Array (Array Bool)
+type alias Model = { matrix: Matrix, clicked: Bool }
 
 
 init : (Model, Cmd a)
@@ -42,6 +42,7 @@ type Msg = SwitchMsg Switch
   | MickeyDown
   | MickeyUp
   | Clear
+  | NextStep
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -57,6 +58,7 @@ update msg model =
         (model, Cmd.none)
     MickeyDown -> ( { model | clicked = True }, Cmd.none)
     MickeyUp -> ( { model | clicked = False }, Cmd.none)
+    NextStep -> ( { model | matrix = nextGeneration model.matrix}, Cmd.none)
 
 
 mapElement: Int -> Array a -> (a -> a) -> Array a
@@ -65,6 +67,27 @@ mapElement idx arr updater =
       |> Maybe.map (\value -> Array.set idx (updater value) arr)
       |> Maybe.withDefault arr
 
+nextGeneration: Matrix -> Matrix
+nextGeneration matrix =
+    Array.indexedMap (\x row ->
+        Array.indexedMap (\y _ ->
+          nextCell matrix x y) row) matrix
+
+nextCell: Matrix -> Int -> Int -> Bool
+nextCell matrix rowIdx colIdx =
+  List.concatMap (\n -> List.map (\m -> ((rowIdx + n + 16) % 16, (colIdx + m + 16) % 16)) [-1, 0, 1]) [-1, 0, 1]
+    |> List.filter (\p -> (not ((fst p) == rowIdx && (snd p) == colIdx)))  --filter if m and n == 0
+    |> List.filter (\p -> getCell matrix (fst p) (snd p))
+    |> List.length
+    |> (\l -> ((getCell matrix rowIdx colIdx) && l > 1 && l < 4) || l == 3)
+
+getCell: Matrix -> Int -> Int -> Bool
+getCell matrix rowIdx colIdx =
+     matrix
+         |> Array.get rowIdx
+         |> Maybe.withDefault (Array.repeat 16 False)
+         |> Array.get colIdx
+         |> Maybe.withDefault False
 
 -- SUBSCRIPTIONS
 
@@ -72,10 +95,12 @@ mapElement idx arr updater =
 -- incoming values
 port reset : (String -> msg) -> Sub msg
 
+port nextStep : (String -> msg) -> Sub msg
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Sub.batch [ Mouse.downs (always MickeyDown), Mouse.ups (always MickeyUp), reset (always Clear) ]
+  Sub.batch [ Mouse.downs (always MickeyDown), Mouse.ups (always MickeyUp), reset (always Clear), nextStep (always NextStep) ]
 
 
 -- VIEW
