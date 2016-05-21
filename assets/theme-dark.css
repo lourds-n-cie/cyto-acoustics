@@ -10,8 +10,9 @@ body.theme-dark .matrix table td.off{
     background-color: #101010;
 }
 
-body.theme-dark .matrix table td.on, .matrix table td:hover{    
-    background-color: darkorange;
+body.theme-dark .matrix table td.on {
+	background-image: radial-gradient( circle at center, #FFFF33, transparent 90%);
+	background-color: darkorange;
 }
 
 body.theme-dark .matrix table td:hover{
