@@ -1,4 +1,8 @@
 /* general layout */
+body{
+    background-color: #282828 ;    
+    color: #F0F0F0 ;
+}
 
 header{
     position: absolute;
@@ -53,6 +57,7 @@ header > h1{
     height: 90vmin;
     width: 90vmin;
     margin: auto;
+    background-color: black;
 }
 .matrix table{
     empty-cells: show;
@@ -66,17 +71,17 @@ header > h1{
 }
 
 .matrix table td.off{    
-    background-color: #C0C0C0;
+    background-color: #101010;
 }
 
 .matrix table td.on {
 	background-image: radial-gradient( circle at center, #FFFF33, transparent 90%);
-	background-color: #FFFF99;
+	background-color: darkorange;
 }
 
 .matrix table td:hover{
     background-image: none;
-    background-color: darkorange;
+    background-color: #FFFF33;
     box-shadow: inset 1px 1px 1px 0px rgba(48,48,48,0.5);
 }
 

@@ -6,22 +6,13 @@
   <title>Cellular acoustics</title>
   <link href="assets/vendor/normalize.css" rel="stylesheet">
   <link href="assets/main.css" rel="stylesheet">
-  <link href="assets/theme-dark.css" rel="stylesheet">
 </head>
-
-<body class="theme-dark">
+<body>
   <header>
     <h1>Cyto-Acoustics</h1>
   </header>
   <div class="container">
     <div class="col col1-3">
-      <section class="theme-picker">
-        <fieldset>
-          <legend>Theme</legend>
-          <label><input type="radio" name="theme" value="dark" autocomplete="off"/>Dark</label>
-          <label><input type="radio" name="theme" value="default"autocomplete="off" />Light</label>
-        </fieldset>
-      </section>
       <section class="tools">
         <button id="reset">Reset &orarr;</button>
         <button id="nextStep" onclick="javascript:alert('Not implemented...');">Next &#9731;</button>
@@ -34,19 +25,6 @@
   <script type="text/javascript" src="target/cyto-acoustics.js"></script>
   <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function(event) {
-
-      var themePickerOptions = document.getElementsByName("theme");
-
-      for(var i=0; i < themePickerOptions.length; i++){
-        themePickerOptions[i].addEventListener('click', themeChange, false);
-      }
-
-      function themeChange(){
-        if(this.value){
-          document.body.className = 'theme-' + this.value;
-        }
-      }
-
 
       var matrix = document.getElementById('matrix');
       // remove loading message
