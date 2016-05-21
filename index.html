@@ -31,6 +31,7 @@
         <div id="matrix" class="matrix">Loading ...</div>
     </div>
 </div>
+<script type="text/javascript" src="assets/vendor/blip.min.js"></script>
 <script type="text/javascript" src="target/cyto-acoustics.js"></script>
 <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function(event) {
@@ -88,6 +89,10 @@
 
         // kus' audio test -- START
 
+        blip.sampleLoader()
+          .samples({ 'la': 'assets/la_stretched.wav' })
+          .load();
+          
         app.ports.newCells.subscribe(function(newCells) {
           blip.clip()
             .sample('la')
