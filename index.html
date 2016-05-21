@@ -91,9 +91,12 @@
           .load();
 
         app.ports.newCells.subscribe(function(newCells) {
-          blip.clip()
-            .sample('la')
-            .play(0);
+          for(var i = 0; i < newCells.length; i++) {
+            var rate = Math.pow(2, newCells[i][0] / 12);
+            blip.clip()
+              .sample('la')
+              .play(0, {gain: 1, rate: rate});
+          }
         });
 
         // kus' audio test -- END

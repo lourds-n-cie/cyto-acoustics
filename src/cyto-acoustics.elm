@@ -77,7 +77,7 @@ wasOff { matrix, clicked } { row, col } =
       |> not
   in
     if wasOff then
-      newCells [ ( row, col ) ]
+      newCells [ ( size - 1 - row, col ) ]
     else
       Cmd.none
 
