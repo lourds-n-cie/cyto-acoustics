@@ -6,6 +6,7 @@
   <title>Cellular acoustics</title>
   <link href="assets/vendor/normalize.css" rel="stylesheet">
   <link href="assets/main.css" rel="stylesheet">
+  <link href="assets/theme-dark.css" rel="stylesheet">
 </head>
 
 <body class="theme-default">
@@ -15,16 +16,33 @@
   <div class="container">
     <div class="col col1-3">
       <section class="tools">
+        <fieldset>
+          <legend>Theme</legend>
+          <label><input type="radio" name="theme" value="default" checked/>Light</label>
+          <label><input type="radio" name="theme" value="dark"/>Dark</label>
+        </fieldset>
         <p>blah blah blah</p>
       </section>
     </div>
     <div class="col col2-3">
       <div id="matrix" class="matrix">Loading ...</div>
-    </div>    
+    </div>
   </div>
   <script type="text/javascript" src="target/cyto-acoustics.js"></script>
   <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function(event) { 
+      
+      var themePickerOptions = document.getElementsByName("theme");
+
+      for(var i=0; i < themePickerOptions.length; i++){
+        themePickerOptions[i].addEventListener('click', themeChange, false);
+      }
+      
+      function themeChange(){
+        document.body.className = 'theme-' + this.value;
+      }
+      
+      
       var matrix = document.getElementById('matrix');
       // remove loading message
       matrix.innerHTML ='';
