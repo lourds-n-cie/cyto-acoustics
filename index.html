@@ -75,12 +75,12 @@
         var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
         var previousOscillators = [];
-        app.ports.newCells.subscribe(function(newCells) {
-            stopOscillators(audioCtx, previousOscillators);
+        // app.ports.newCells.subscribe(function(newCells) {
+        //     stopOscillators(audioCtx, previousOscillators);
             
-            previousOscillators = createOscillatorsForCoords(audioCtx, gridSize, newCells);
-            startOscillators(audioCtx, previousOscillators);
-        });
+        //     previousOscillators = createOscillatorsForCoords(audioCtx, gridSize, newCells);
+        //     startOscillators(audioCtx, previousOscillators);
+        // });
         
         // tibal's audio test -- END
 
@@ -92,7 +92,7 @@
 
         app.ports.newCells.subscribe(function(newCells) {
           for(var i = 0; i < newCells.length; i++) {
-            var rate = Math.pow(2, newCells[i][0] / 12);
+            var rate = Math.pow(2, newCells[i][0] / 12) / 2;
             blip.clip()
               .sample('la')
               .play(0, {gain: 1, rate: rate});

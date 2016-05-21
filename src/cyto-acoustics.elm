@@ -34,7 +34,8 @@ init size =
 -- UPDATE
 
 
-type alias Switch = { row : Int, col : Int }
+type alias Switch =
+  { row : Int, col : Int }
 
 
 type Msg = SwitchMsg Switch
@@ -60,26 +61,38 @@ update msg model =
         (model, Cmd.none)
     MickeyDown -> ( { model | clicked = True }, Cmd.none)
     MickeyUp -> ( { model | clicked = False }, Cmd.none)
-    NextStep -> ( { model | matrix = nextGeneration model.matrix}, Cmd.none)
-    Tick -> ( if model.live then { model | matrix = nextGeneration model.matrix} else model, Cmd.none)
+    NextStep -> updateNextGen model
+    Tick -> if model.live then updateNextGen model else (model, Cmd.none)
     ToggleLive -> ( { model | live = not model.live }, Cmd.none)
 
 
 updateHelper : Switch -> Model -> (Model, Cmd Msg)
 updateHelper sw model =
-  ( { model | matrix = mapElement sw.row model.matrix (\row -> mapElement sw.col row not) }, wasOff model sw)
-
-
-wasOff : Model -> Switch -> Cmd Msg
-wasOff { matrix, clicked, size } { row, col } =
   let
-    wasOff = getCellWithDefault True matrix row col
-      |> not
+    newModel = { model | matrix = mapElement sw.row model.matrix (\row -> mapElement sw.col row not) }
   in
-    if wasOff then
-      newCells [ ( size - 1 - row, col ) ]
-    else
-      Cmd.none
+  ( newModel, diff model.matrix newModel.matrix )
+
+
+updateNextGen : Model -> (Model, Cmd Msg)
+updateNextGen model =
+  let
+    newModel = { model | matrix = nextGeneration model.matrix}
+  in
+    (newModel, diff model.matrix newModel.matrix)
+
+
+diff : Matrix -> Matrix -> Cmd Msg
+diff oldMatrix newMatrix =
+  List.map2 (\(row, oldRow) (_, newRow) -> diffRows row oldRow newRow) (Array.toIndexedList oldMatrix) (Array.toIndexedList newMatrix)
+    |> List.concatMap identity
+    |> newCells
+
+
+diffRows : Int -> Array Bool -> Array Bool -> List (Int, Int)
+diffRows row oldRow newRow =
+  List.map2 (\(col, oldValue) (_, newValue) -> if newValue && oldValue /= newValue then [(row, col)] else []) (Array.toIndexedList oldRow) (Array.toIndexedList newRow)
+    |> List.concatMap identity
 
 
 mapElement: Int -> Array a -> (a -> a) -> Array a
@@ -94,11 +107,6 @@ nextGeneration matrix =
   Array.indexedMap (\x row ->
     Array.indexedMap (\y _ ->
       nextCell matrix x y) row) matrix
-
-
---nextRow: Matrix -> List Bool -> Set (Int, Int) -> (List Bool, Set (Int, Int))
---nextRow matrix row toggledOns =
---  ???
   
 
 nextCell: Matrix -> Int -> Int -> Bool
@@ -112,19 +120,20 @@ nextCell matrix rowIdx colIdx =
       |> List.filter (\p -> getCell matrix (fst p) (snd p))
       |> List.length
       |> (\l -> (originalValue && l > 1 && l < 4) || l == 3)
-      --|> \result -> (result, if originalValue == result then toggledOns else Set.insert (rowIdx, colIdx) toggledOns)
 
 
-getCell = getCellWithDefault False
+getCell =
+  getCellWithDefault False
 
 
 getCellWithDefault: Bool -> Matrix -> Int -> Int -> Bool
 getCellWithDefault default matrix rowIdx colIdx =
-     matrix
-         |> Array.get rowIdx
-         |> Maybe.withDefault (Array.repeat (Array.length matrix ) False)
-         |> Array.get colIdx
-         |> Maybe.withDefault default
+  matrix
+    |> Array.get rowIdx
+    |> Maybe.withDefault (Array.repeat (Array.length matrix ) False)
+    |> Array.get colIdx
+    |> Maybe.withDefault default
+
 
 -- SUBSCRIPTIONS
 
@@ -142,12 +151,12 @@ port nextStep : (String -> msg) -> Sub msg
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.batch [
-     Mouse.downs (always MickeyDown),
-     Mouse.ups (always MickeyUp),
-     reset (always Clear),
-     nextStep (always NextStep),
-     every (500*millisecond) (always Tick),
-     toggleLive (always ToggleLive)
+    Mouse.downs (always MickeyDown),
+    Mouse.ups (always MickeyUp),
+    reset (always Clear),
+    nextStep (always NextStep),
+    every (150*millisecond) (always Tick),
+    toggleLive (always ToggleLive)
   ]
 
 
@@ -162,23 +171,23 @@ port newCells : List (Int, Int) -> Cmd msg
 
 viewCell : Int -> Int -> Bool -> Html Msg
 viewCell row col cell =
-    let
-      msg = Switch row col
-    in
+  let
+    msg = Switch row col
+  in
     td [class (if cell then "on" else "off"), onClick (SwitchMsg msg), onMouseEnter (DragMsg msg)] []
 
 
 viewRow : Int -> Array Bool -> Html Msg
 viewRow row cells =
-     cells
-        |> Array.indexedMap (viewCell row)
-        |> Array.toList
-        |> tr []
+  cells
+    |> Array.indexedMap (viewCell row)
+    |> Array.toList
+    |> tr []
 
 
 view : Model -> Html Msg
 view model =
-      model.matrix
-        |> Array.indexedMap viewRow
-        |> Array.toList
-        |> table []
+  model.matrix
+    |> Array.indexedMap viewRow
+    |> Array.toList
+    |> table []

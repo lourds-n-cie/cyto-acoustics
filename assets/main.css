@@ -58,7 +58,7 @@ button {
 }
 .matrix table{
     empty-cells: show;
-    border-spacing: 0.3em;
+    border-spacing: 1px;
     height: 100%;
     width: 100%;
 }
