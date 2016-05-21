@@ -8,6 +8,7 @@ import Array exposing (Array)
 import Debug exposing (log)
 import Time exposing (..)
 import Mouse
+import Set exposing (Set)
 
 
 main =
@@ -99,13 +100,13 @@ nextGeneration matrix =
       nextCell matrix x y) row) matrix
 
 
-nextRow: Matrix -> List Bool -> Set (Int, Int) -> (List Bool, Set (Int, Int))
-nextRow matrix row toggledOns =
+--nextRow: Matrix -> List Bool -> Set (Int, Int) -> (List Bool, Set (Int, Int))
+--nextRow matrix row toggledOns =
+--  ???
   
 
-
-nextCell: Matrix -> Int -> Int -> Set (Int, Int) -> (Bool, Set (Int, Int))
-nextCell matrix rowIdx colIdx toggledOns =
+nextCell: Matrix -> Int -> Int -> Bool
+nextCell matrix rowIdx colIdx =
   let
     originalValue = getCell matrix rowIdx colIdx
   in
@@ -114,7 +115,7 @@ nextCell matrix rowIdx colIdx toggledOns =
       |> List.filter (\p -> getCell matrix (fst p) (snd p))
       |> List.length
       |> (\l -> (originalValue && l > 1 && l < 4) || l == 3)
-      |> \result -> (result, if originalValue == result then toggledOns else Set.insert (rowIdx, colIdx) toggledOns)
+      --|> \result -> (result, if originalValue == result then toggledOns else Set.insert (rowIdx, colIdx) toggledOns)
 
 
 getCell = getCellWithDefault False
@@ -134,11 +135,12 @@ getCellWithDefault default matrix rowIdx colIdx =
 -- incoming values
 port reset : (String -> msg) -> Sub msg
 
+
 port toggleLive : (String -> msg) -> Sub msg
+
 
 port nextStep : (String -> msg) -> Sub msg
 
-port newCells : List (Int, Int) -> Cmd msg
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
