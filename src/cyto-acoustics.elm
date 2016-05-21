@@ -45,14 +45,16 @@ update msg model =
   in
     case msg of
       SwitchMsg sw ->
-        (mapElement sw.row model (\row -> mapElement sw.col row not), Cmd.none)
+        (log "model" (mapElement sw.row model (\row -> mapElement sw.col row not)), Cmd.none)
+
 
 
 mapElement: Int -> Array a -> (a -> a) -> Array a
 mapElement idx arr updater =
     Array.get idx arr
-      |> Maybe.map (\value -> Array.set idx value arr)
+      |> Maybe.map (\value -> Array.set idx (updater value) arr)
       |> Maybe.withDefault arr
+      |> log "mapElement"
 
 
 -- SUBSCRIPTIONS
