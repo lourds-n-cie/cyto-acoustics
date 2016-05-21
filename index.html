@@ -73,7 +73,15 @@
 
         // create web audio api context
         var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
+        
+        var previousOscillators = [];
+        app.ports.newCells.subscribe(function(newCells) {
+            stopOscillators(audioCtx, previousOscillators);
+            
+            previousOscillators = createOscillatorsForCoords(audioCtx, gridSize, newCells);
+            startOscillators(audioCtx, previousOscillators);
+        });
+        
         // tibal's audio test -- END
 
         // kus' audio test -- START
@@ -90,22 +98,23 @@
 
         // kus' audio test -- END
     });
-
-    function createOscillatorsForCoords(audioCtx, coordsArray){
+    
+    function createOscillatorsForCoords(audioCtx, gridSize, coordsArray){
       var result = [];
 
       coordsArray.forEach(function(element, index, array){
         var baseFrequency = 440; // A 440 Hz
         var x = element[0];
         var y = element[1];
-        var frequency = baseFrequency *  Math.pow(2, x / 12);
-        var stereoPanning = (y - 7.5) / 7.5
+        var frequency = baseFrequency *  Math.pow(2, (gridSize - x) / 12);
+        var normalizeFactor = (gridSize - 1) /2;
+        var stereoPanning = (y - normalizeFactor) / normalizeFactor;
         console.log({x : x, y:y, frequency : frequency, pan: stereoPanning})
 
 
         // create Oscillator node
         var oscillator = audioCtx.createOscillator();
-        oscillator.type = 'square';
+        oscillator.type = 'sine';
         oscillator.frequency.value = frequency; // value in hertz
 
         // add a stereo panner to move sound left or right

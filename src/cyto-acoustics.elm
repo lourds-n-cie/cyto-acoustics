@@ -105,6 +105,7 @@ nextCell: Matrix -> Int -> Int -> Bool
 nextCell matrix rowIdx colIdx =
   let
     originalValue = getCell matrix rowIdx colIdx
+    size = Array.length matrix
   in
     List.concatMap (\n -> List.map (\m -> ((rowIdx + n + size) % size, (colIdx + m + size) % size)) [-1, 0, 1]) [-1, 0, 1]
       |> List.filter (\p -> (not ((fst p) == rowIdx && (snd p) == colIdx)))  --filter if m and n == 0
