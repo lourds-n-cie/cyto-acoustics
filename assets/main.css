@@ -24,15 +24,16 @@ header{
     width: 100%;
 }
 
-.matrix table td{    
-    border: 1px solid #C0C0C0;
-}
-
 .matrix table td.off{    
     background-color: #C0C0C0;
 }
 
-.matrix table td.on{    
-    background-color: #303030;
+.matrix table td.on, .matrix table td:hover{    
+    background-color: #606060;
+}
+
+.matrix table td:hover{
+    background-color: darkorange;
+    box-shadow: inset 1px 1px 1px 0px rgba(48,48,48,0.5);
 }
 
