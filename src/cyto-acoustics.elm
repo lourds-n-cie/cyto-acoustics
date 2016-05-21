@@ -21,7 +21,9 @@ main =
 
 -- MODEL
 
+
 size = 16
+
 
 type alias Matrix = Array (Array Bool)
 type alias Model = { matrix: Matrix, clicked: Bool, live: Bool }
@@ -74,9 +76,8 @@ updateHelper sw model =
 wasOff : Model -> Switch -> Cmd Msg
 wasOff { matrix, clicked } { row, col } =
   let
-    wasOff = Maybe.andThen (Array.get row matrix) (\row -> Array.get col row)
-      |> Maybe.map not
-      |> Maybe.withDefault False
+    wasOff = getCellWithDefault True matrix row col
+      |> not
   in
     if wasOff then
       newCells [ ( row, col ) ]
@@ -86,34 +87,46 @@ wasOff { matrix, clicked } { row, col } =
 
 mapElement: Int -> Array a -> (a -> a) -> Array a
 mapElement idx arr updater =
-    Array.get idx arr
-      |> Maybe.map (\value -> Array.set idx (updater value) arr)
-      |> Maybe.withDefault arr
+  Array.get idx arr
+    |> Maybe.map (\value -> Array.set idx (updater value) arr)
+    |> Maybe.withDefault arr
 
 
 nextGeneration: Matrix -> Matrix
 nextGeneration matrix =
-    Array.indexedMap (\x row ->
-        Array.indexedMap (\y _ ->
-          nextCell matrix x y) row) matrix
+  Array.indexedMap (\x row ->
+    Array.indexedMap (\y _ ->
+      nextCell matrix x y) row) matrix
 
 
-nextCell: Matrix -> Int -> Int -> Bool
-nextCell matrix rowIdx colIdx =
-  List.concatMap (\n -> List.map (\m -> ((rowIdx + n + size) % size, (colIdx + m + size) % size)) [-1, 0, 1]) [-1, 0, 1]
-    |> List.filter (\p -> (not ((fst p) == rowIdx && (snd p) == colIdx)))  --filter if m and n == 0
-    |> List.filter (\p -> getCell matrix (fst p) (snd p))
-    |> List.length
-    |> (\l -> ((getCell matrix rowIdx colIdx) && l > 1 && l < 4) || l == 3)
+nextRow: Matrix -> List Bool -> Set (Int, Int) -> (List Bool, Set (Int, Int))
+nextRow matrix row toggledOns =
+  
 
 
-getCell: Matrix -> Int -> Int -> Bool
-getCell matrix rowIdx colIdx =
+nextCell: Matrix -> Int -> Int -> Set (Int, Int) -> (Bool, Set (Int, Int))
+nextCell matrix rowIdx colIdx toggledOns =
+  let
+    originalValue = getCell matrix rowIdx colIdx
+  in
+    List.concatMap (\n -> List.map (\m -> ((rowIdx + n + size) % size, (colIdx + m + size) % size)) [-1, 0, 1]) [-1, 0, 1]
+      |> List.filter (\p -> (not ((fst p) == rowIdx && (snd p) == colIdx)))  --filter if m and n == 0
+      |> List.filter (\p -> getCell matrix (fst p) (snd p))
+      |> List.length
+      |> (\l -> (originalValue && l > 1 && l < 4) || l == 3)
+      |> \result -> (result, if originalValue == result then toggledOns else Set.insert (rowIdx, colIdx) toggledOns)
+
+
+getCell = getCellWithDefault False
+
+
+getCellWithDefault: Bool -> Matrix -> Int -> Int -> Bool
+getCellWithDefault default matrix rowIdx colIdx =
      matrix
          |> Array.get rowIdx
          |> Maybe.withDefault (Array.repeat size False)
          |> Array.get colIdx
-         |> Maybe.withDefault False
+         |> Maybe.withDefault default
 
 -- SUBSCRIPTIONS
 
@@ -137,6 +150,12 @@ subscriptions model =
      every (500*millisecond) (always Tick),
      toggleLive (always ToggleLive)
   ]
+
+
+-- OUT PORTS
+
+
+port newCells : List (Int, Int) -> Cmd msg
 
 
 -- VIEW
