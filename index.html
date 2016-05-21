@@ -101,30 +101,33 @@
 
         // kus' audio test -- END
     });
-
-    function createOscillatorsForCoords(audioCtx, coordsArray) {
-        var result = [];
-
-        coordsArray.forEach(function(element, index, array) {
-            var baseFrequency = 440; // A 440 Hz
-            var x = element[0];
-            var y = element[1];
-            var frequency = baseFrequency * Math.pow(2, x / 12);
-            console.log({
-                x: x,
-                y: y,
-                frequency: frequency
-            })
-            // create Oscillator node
-            var oscillator = audioCtx.createOscillator();
-            oscillator.type = 'square';
-            oscillator.frequency.value = frequency; // value in hertz
-            oscillator.connect(audioCtx.destination);
-
-            result.push(oscillator);
-        });
-
-        return result;
+    
+    function createOscillatorsForCoords(audioCtx, coordsArray){
+      var result = [];
+      
+      coordsArray.forEach(function(element, index, array){
+        var baseFrequency = 440; // A 440 Hz
+        var x = element[0];
+        var y = element[1];
+        var frequency = baseFrequency *  Math.pow(2, x / 12);
+        var stereoPanning = (y - 7.5) / 7.5
+        console.log({x : x, y:y, frequency : frequency, pan: stereoPanning})
+        
+        
+        // create Oscillator node
+        var oscillator = audioCtx.createOscillator();
+        oscillator.type = 'square';
+        oscillator.frequency.value = frequency; // value in hertz
+        
+        // add a stereo panner to move sound left or right
+        var panNode = audioCtx.createStereoPanner();
+        panNode.pan.value = stereoPanning;
+        oscillator.connect(panNode);
+        panNode.connect(audioCtx.destination);
+        result.push(oscillator);
+      });
+      
+      return result;
     }
 </script>
 </body>
