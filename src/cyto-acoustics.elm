@@ -2,9 +2,11 @@ module Cytoacoustics exposing (..)
 
 import Html exposing (..)
 import Html.App as Html
+import Html.Events exposing (onClick)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Time exposing (Time, second)
+import Array exposing (Array)
 
 
 
@@ -12,7 +14,7 @@ main =
   Html.program
     { init = init
     , view = view
-    , update = \_ m -> (m, Cmd.none)
+    , update = update
     , subscriptions = \_ -> Sub.none
     }
 
@@ -20,27 +22,33 @@ main =
 -- MODEL
 
 
-type alias Model = List (List Bool)
+type alias Model = Array (Array Bool)
 
 
 init : (Model, Cmd a)
 init =
-  (List.repeat 16 (List.repeat 16 False), Cmd.none)
+  (Array.repeat 16 (Array.repeat 16 False), Cmd.none)
 
 
 -- UPDATE
 
 
---type Msg
---  = Tick Time
---
---
---update : Msg -> Model -> (Model, Cmd Msg)
---update action model =
---  case action of
---    Tick newTime ->
---      (newTime, Cmd.none)
+type alias Switch = { row : Int, col : Int }
 
+type Msg = SwitchMsg Switch
+
+update : Msg -> Model -> (Model, Cmd Msg)
+update msg model =
+  case msg of
+    SwitchMsg sw ->
+        (mapElement sw.row model (\row -> mapElement sw.col row not), Cmd.none)
+
+
+mapElement: Int -> Array a -> (a -> a) -> Array a
+mapElement idx arr updater =
+    Array.get idx arr
+      |> Maybe.map (\value -> Array.set idx value arr)
+      |> Maybe.withDefault arr
 
 
 -- SUBSCRIPTIONS
@@ -53,19 +61,24 @@ init =
 
 
 -- VIEW
-viewCell : Bool -> Html a
-viewCell cell =
-    td [class (if cell then "on" else "off")] []
+viewCell : Int -> Int -> Bool -> Html Msg
+viewCell row col cell =
+    let
+      msg = Switch row col
+    in
+    td [class (if cell then "on" else "off"), onClick (SwitchMsg msg)] []
 
 
-viewRow : List Bool -> Html a
-viewRow cells =
+viewRow : Int -> Array Bool -> Html Msg
+viewRow row cells =
      cells
-        |> List.map viewCell
+        |> Array.indexedMap (viewCell row)
+        |> Array.toList
         |> tr []
 
-view : Model -> Html a
+view : Model -> Html Msg
 view model =
       model
-        |> List.map viewRow
+        |> Array.indexedMap viewRow
+        |> Array.toList
         |> table []
