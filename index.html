@@ -9,7 +9,7 @@
   <link href="assets/theme-dark.css" rel="stylesheet">
 </head>
 
-<body class="theme-default">
+<body class="theme-dark">
   <header>
     <h1>Cyto-Acoustics</h1>
   </header>
@@ -18,7 +18,7 @@
       <section class="theme-picker">
         <fieldset>
           <legend>Theme</legend>
-          <label><input type="radio" name="theme" value="default" checked/>Light</label>
+          <label><input type="radio" name="theme" value="default"/>Light</label>
           <label><input type="radio" name="theme" value="dark"/>Dark</label>
         </fieldset>
       </section>
@@ -42,8 +42,12 @@
       }
 
       function themeChange(){
-        document.body.className = 'theme-' + this.value;
+        if(this.value){
+          document.body.className = 'theme-' + this.value;
+        }
       }
+      
+      themeChange(); // trigger once to resync (persisted by FF on refresh)
 
 
       var matrix = document.getElementById('matrix');
