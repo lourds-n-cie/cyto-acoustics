@@ -3,10 +3,16 @@
   <head>
     <meta charset="UTF-8">
     <title>Cellular acoustics</title>
-    <script type="text/javascript" src="target/cyto-acoustics.js"></script>
+    <link href="assets/main.css" rel="stylesheet">
   </head>
   <body>
     <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function(event) { 
+      var matrix = document.getElementById('matrix');
+      // remove loading message
+      matrix.innerHTML ='';
+      var app = Elm.Cytoacoustics.embed(matrix);
+    });
       // var context = new AudioContext();
 
       // //defaults to A440Hz, sine wave
@@ -32,12 +38,16 @@
       // src.start(0);
       // mod.start(0);
 
-       var app = Elm.Cytoacoustics.fullscreen();
+       
       // app.ports.???.subscribe(function(???) {
       //   gainNode.gain.value = ???;
       //   oscillator.frequency.value = ???;
       //   oscillator.detune.value = ???;
       // });
     </script>
+    <div class="container">
+      <div id="matrix">Loading ...</div>
+    </div>
+    <script type="text/javascript" src="target/cyto-acoustics.js"></script>
   </body>
 </html>
