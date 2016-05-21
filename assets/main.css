@@ -1,13 +1,31 @@
+header{
+    float: left;
+    clear:  both;
+    position: fixed;
+}
 
+.container {
+    margin: 1em;
+    text-align: center;
+}
+
+.matrix {
+    border-radius: 2px 2px 2px 2px;
+    box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.75);
+    display: inline-block;
+    padding: 0.3em;
+    height: 90vmin;
+    width: 90vmin;
+}
 .matrix table{
     empty-cells: show;
     border-spacing: 0.3em;
+    height: 100%;
+    width: 100%;
 }
 
 .matrix table td{    
     border: 1px solid #C0C0C0;
-    width: 1em;
-    height: 1em;
 }
 
 .matrix table td.off{    
