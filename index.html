@@ -7,6 +7,7 @@
   <link href="assets/vendor/normalize.css" rel="stylesheet">
   <link href="assets/main.css" rel="stylesheet">
 </head>
+
 <body>
   <header>
     <h1>Cyto-Acoustics</h1>
@@ -18,7 +19,8 @@
         <button id="nextStep" onclick="javascript:alert('Not implemented...');">Next &#9731;</button>
       </section>
       <section>
-        <textarea id="notesToPlay"></textarea>
+        <textarea id="notesToPlay" cols="40" rows="15"></textarea>
+        <br/>
         <button id="play">&#9658; Play</button>
         <button id="pause" style="display:none;">&#10074;&#10074; Pause</button>
       </section>
@@ -39,18 +41,65 @@
         app.ports.reset.send("");
       });
       
+      var notes = [
+          [0, 0],
+          [3, 3],
+          [15, 15],
+      ];
+      
+      document.getElementById('notesToPlay').value = JSON.stringify(notes);
+      
+      // create web audio api context
+      var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+         
       
       // music playback experiments
       document.getElementById('play').addEventListener("click", function() {
         document.getElementById('pause').style.display = 'inline';
         document.getElementById('play').style.display = 'none';
+        
+        var coords = JSON.parse( document.getElementById('notesToPlay').value );
+        
+        var oscillators = createOscillatorsForCoords(audioCtx, coords);
+        oscillators.forEach(function(oscillator){
+          oscillator.start();
+        });
+
+        
+        document.getElementById('pause').addEventListener("click", function(e) {
+          document.getElementById('play').style.display = 'inline';
+          document.getElementById('pause').style.display = 'none';
+          oscillators.forEach(function(oscillator){
+            oscillator.stop();
+          });
+          
+          // remove this handler
+	        e.target.removeEventListener(e.type, arguments.callee);
+        });
+      });     
+      
+    });
+    
+    function createOscillatorsForCoords(audioCtx, coordsArray){
+      var result = [];
+      
+      coordsArray.forEach(function(element, index, array){
+        var baseFrequency = 440; // A 440 Hz
+        var x = element[0];
+        var y = element[1];
+        var frequency = baseFrequency *  Math.pow(2, x / 12);
+        console.log({x : x, y:y, frequency : frequency})
+        // create Oscillator node
+        var oscillator = audioCtx.createOscillator();
+        oscillator.type = 'square';
+        oscillator.frequency.value = frequency; // value in hertz
+        oscillator.connect(audioCtx.destination);
+        
+        result.push(oscillator);
       });
       
-      document.getElementById('pause').addEventListener("click", function() {
-        document.getElementById('play').style.display = 'inline';
-        document.getElementById('pause').style.display = 'none';
-      });
-    });
+      return result;
+    }
       // var context = new AudioContext();
 
       // //defaults to A440Hz, sine wave
