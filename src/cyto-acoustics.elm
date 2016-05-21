@@ -7,6 +7,7 @@ import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Time exposing (Time, second)
 import Array exposing (Array)
+import Debug exposing (log)
 
 
 
@@ -39,8 +40,11 @@ type Msg = SwitchMsg Switch
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
-  case msg of
-    SwitchMsg sw ->
+  let
+    xx = log "onClick" msg
+  in
+    case msg of
+      SwitchMsg sw ->
         (mapElement sw.row model (\row -> mapElement sw.col row not), Cmd.none)
 
 
