@@ -21,6 +21,7 @@ main =
 
 -- MODEL
 
+size = 16
 
 type alias Matrix = Array (Array Bool)
 type alias Model = { matrix: Matrix, clicked: Bool }
@@ -28,7 +29,7 @@ type alias Model = { matrix: Matrix, clicked: Bool }
 
 init : (Model, Cmd a)
 init =
-  (Model (Array.repeat 16 (Array.repeat 16 False)) False, Cmd.none)
+  (Model (Array.repeat size (Array.repeat size False)) False, Cmd.none)
 
 
 -- UPDATE
@@ -75,7 +76,7 @@ nextGeneration matrix =
 
 nextCell: Matrix -> Int -> Int -> Bool
 nextCell matrix rowIdx colIdx =
-  List.concatMap (\n -> List.map (\m -> ((rowIdx + n + 16) % 16, (colIdx + m + 16) % 16)) [-1, 0, 1]) [-1, 0, 1]
+  List.concatMap (\n -> List.map (\m -> ((rowIdx + n + size) % size, (colIdx + m + size) % size)) [-1, 0, 1]) [-1, 0, 1]
     |> List.filter (\p -> (not ((fst p) == rowIdx && (snd p) == colIdx)))  --filter if m and n == 0
     |> List.filter (\p -> getCell matrix (fst p) (snd p))
     |> List.length
@@ -85,7 +86,7 @@ getCell: Matrix -> Int -> Int -> Bool
 getCell matrix rowIdx colIdx =
      matrix
          |> Array.get rowIdx
-         |> Maybe.withDefault (Array.repeat 16 False)
+         |> Maybe.withDefault (Array.repeat size False)
          |> Array.get colIdx
          |> Maybe.withDefault False
 
