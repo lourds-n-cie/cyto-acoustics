@@ -50,6 +50,8 @@
             app.ports.nextStep.send("");
         });
 
+        // tibal's audio test -- START
+
         var notes = [
             [0, 0], [3, 3], [15, 15],
         ];
@@ -82,7 +84,17 @@
                 e.target.removeEventListener(e.type, arguments.callee);
             });
         });
+        // tibal's audio test -- END
 
+        // kus' audio test -- START
+
+        app.ports.newCells.subscribe(function(newCells) {
+          blip.clip()
+            .sample('la')
+            .play(0);
+        });
+
+        // kus' audio test -- END
     });
 
     function createOscillatorsForCoords(audioCtx, coordsArray) {
