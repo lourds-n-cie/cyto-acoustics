@@ -20,9 +20,9 @@
           <legend>Theme</legend>
           <label><input type="radio" name="theme" value="default" checked/>Light</label>
           <label><input type="radio" name="theme" value="dark"/>Dark</label>
-        </fieldset>        
+        </fieldset>
       </section>
-      <p>blah blah blah</p>
+        <button id="reset">Reset</button>
     </div>
     <div class="col col2-3">
       <div id="matrix" class="matrix">Loading ...</div>
@@ -30,23 +30,27 @@
   </div>
   <script type="text/javascript" src="target/cyto-acoustics.js"></script>
   <script type="text/javascript">
-    document.addEventListener('DOMContentLoaded', function(event) { 
-      
+    document.addEventListener('DOMContentLoaded', function(event) {
+
       var themePickerOptions = document.getElementsByName("theme");
 
       for(var i=0; i < themePickerOptions.length; i++){
         themePickerOptions[i].addEventListener('click', themeChange, false);
       }
-      
+
       function themeChange(){
         document.body.className = 'theme-' + this.value;
       }
-      
-      
+
+
       var matrix = document.getElementById('matrix');
       // remove loading message
       matrix.innerHTML ='';
       var app = Elm.Cytoacoustics.embed(matrix);
+      document.getElementById('reset').addEventListener("click", function() {
+        console.log("on button");
+        app.ports.reset.send("");
+      });
     });
       // var context = new AudioContext();
 
@@ -73,7 +77,7 @@
       // src.start(0);
       // mod.start(0);
 
-       
+
       // app.ports.???.subscribe(function(???) {
       //   gainNode.gain.value = ???;
       //   oscillator.frequency.value = ???;

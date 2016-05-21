@@ -1,4 +1,4 @@
-module Cytoacoustics exposing (..)
+port module Cytoacoustics exposing (..)
 
 import Html exposing (..)
 import Html.App as Html
@@ -16,7 +16,7 @@ main =
     { init = init
     , view = view
     , update = update
-    , subscriptions = \_ -> Sub.none
+    , subscriptions = subscriptions
     }
 
 
@@ -36,16 +36,15 @@ init =
 
 type alias Switch = { row : Int, col : Int }
 
-type Msg = SwitchMsg Switch
+type Msg = SwitchMsg Switch | Clear
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
-  let
-    xx = log "onClick" msg
-  in
-    case msg of
+  case msg of
       SwitchMsg sw ->
-        (log "model" (mapElement sw.row model (\row -> mapElement sw.col row not)), Cmd.none)
+        (mapElement sw.row model (\row -> mapElement sw.col row not), Cmd.none)
+
+      Clear -> init
 
 
 
@@ -54,15 +53,15 @@ mapElement idx arr updater =
     Array.get idx arr
       |> Maybe.map (\value -> Array.set idx (updater value) arr)
       |> Maybe.withDefault arr
-      |> log "mapElement"
 
 
 -- SUBSCRIPTIONS
 
+-- incoming values
+port reset : (String -> msg) -> Sub msg
 
---subscriptions : Model -> Sub Msg
---subscriptions model =
---  Time.every second Tick
+subscriptions : Model -> Sub Msg
+subscriptions model = reset (always Clear)
 
 
 
