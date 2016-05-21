@@ -12,7 +12,7 @@ import Set exposing (Set)
 
 
 main =
-  Html.program
+  Html.programWithFlags
     { init = init
     , view = view
     , update = update
@@ -22,17 +22,13 @@ main =
 
 -- MODEL
 
-
-size = 16
-
-
 type alias Matrix = Array (Array Bool)
-type alias Model = { matrix: Matrix, clicked: Bool, live: Bool }
+type alias Model = { matrix: Matrix, clicked: Bool, size: Int, live: Bool }
 
 
-init : (Model, Cmd a)
-init =
-  (Model (Array.repeat size (Array.repeat size False)) False False, Cmd.none)
+init :Int -> (Model, Cmd a)
+init size =
+  (Model (Array.repeat size (Array.repeat size False)) False size False, Cmd.none)
 
 
 -- UPDATE
@@ -54,7 +50,7 @@ type Msg = SwitchMsg Switch
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    Clear -> init
+    Clear -> init model.size
     SwitchMsg sw ->
       updateHelper sw model
     DragMsg sw ->
@@ -125,7 +121,7 @@ getCellWithDefault: Bool -> Matrix -> Int -> Int -> Bool
 getCellWithDefault default matrix rowIdx colIdx =
      matrix
          |> Array.get rowIdx
-         |> Maybe.withDefault (Array.repeat size False)
+         |> Maybe.withDefault (Array.repeat (Array.length matrix ) False)
          |> Array.get colIdx
          |> Maybe.withDefault default
 
