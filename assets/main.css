@@ -1,21 +1,43 @@
 header{
-    float: left;
-    clear:  both;
-    position: fixed;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+header > h1{
+    margin: 0;
 }
 
 .container {
-    margin: 1em;
-    text-align: center;
+    width: 100%;
+    margin-top: 2em;
+}
+
+.container > .col{
+    margin: 0 2%;
+    width:44%;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.container > .col1-2{
+    width:44%;
+}
+.container > .col1-3{
+    width:30%;
+}
+
+.container > .col2-3{
+    width:60%;
 }
 
 .matrix {
     border-radius: 2px 2px 2px 2px;
     box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.75);
-    display: inline-block;
     padding: 0.3em;
     height: 90vmin;
     width: 90vmin;
+    margin: auto;
 }
 .matrix table{
     empty-cells: show;
