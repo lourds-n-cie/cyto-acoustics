@@ -46,6 +46,10 @@ header > h1{
     width: 100%;
 }
 
+.matrix td{
+    cursor: pointer;
+}
+
 .matrix table td.off{    
     background-color: #C0C0C0;
 }
