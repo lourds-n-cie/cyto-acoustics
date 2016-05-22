@@ -37,7 +37,7 @@
         var matrix = document.getElementById('matrix');
         // remove loading message
         matrix.innerHTML = '';
-        var gridSize = Number.parseInt(getParameterByName('gridSize'), 10) || 32;
+        var gridSize = Number.parseInt(getParameterByName('gridSize'), 10) || 24;
         var app = Elm.Cytoacoustics.embed(matrix, gridSize);
 
         // Clear action
