@@ -14,15 +14,30 @@
 <header>
     <h1>Cyto-Acoustics</h1>
 </header>
+<a href="https://github.com/lourds-n-cie/cyto-acoustics"><img style="position: absolute; top: 0; right: 0; border: 0;"
+                                      src="https://camo.githubusercontent.com/652c5b9acfaddf3a9c326fa6bde407b87f7be0f4/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67"
+                                      alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"></a>
 <div class="container">
     <div class="col col1-3">
         <section class="tools">
             <button id="randomize">Randomize</button>
         </section>
         <section>
-            <button id="nextStep">Next</button>
+            <div class="onoffswitch">
+                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
+                <label class="onoffswitch-label" for="myonoffswitch">
+                    <span class="onoffswitch-inner"></span>
+                    <span class="onoffswitch-switch"></span>
+                </label>
+            </div>
+            <button id="nextStep" style="display:inline;">Next</button>
             <button id="play">&#9658; Play</button>
             <button id="pause" style="display:none;">&#10074;&#10074; Pause</button>
+        </section>
+        <section>
+           <h3>Patterns</h3>
+           <button class="ship" style="display:inline;">Glider</button>
+            <span>/!\ WIP</span>
         </section>
     </div>
     <div class="col col2-3">
@@ -32,8 +47,7 @@
 <script type="text/javascript" src="assets/vendor/blip.min.js"></script>
 <script type="text/javascript" src="target/cyto-acoustics.js"></script>
 <script type="text/javascript">
-    document.addEventListener('DOMContentLoaded', function(event) {
-
+    document.addEventListener('DOMContentLoaded', function() {
         var matrix = document.getElementById('matrix');
         // remove loading message
         matrix.innerHTML = '';
@@ -43,6 +57,16 @@
         // Clear action
         document.getElementById('randomize').addEventListener("click", function() {
             app.ports.randomize.send(0);
+        });
+
+        // diff vs. full play
+        var onOffSwitch = document.getElementById('myonoffswitch');
+        onOffSwitch.addEventListener("click", function() {
+            if (onOffSwitch.checked) {
+                app.ports.switchMode.send("Full");
+            } else {
+                app.ports.switchMode.send("Diff");
+            }
         });
 
         //next generation -- START
@@ -67,20 +91,26 @@
             });
         });
 
+        var shipButtons = document.getElementsByClassName('ship');
+        for (var i = 0; i < shipButtons.length; ++i) {
+            shipButtons[i].addEventListener("click", function() {
+                app.ports.nextStep.send("");
+            });
+        }
         // next generation -- END
 
         // tibal's audio test -- START
 
         // create web audio api context
         var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
+
         app.ports.newCells.subscribe(function(newCells) {
             /*stopOscillators(audioCtx, previousOscillators);*/
-         
+
             var osc = createOscillatorsForCoords(audioCtx, gridSize, newCells);
             startOscillators(audioCtx, osc, 0.2);
         });
-        
+
         // tibal's audio test -- END
 
         // kus' audio test -- START
@@ -100,7 +130,7 @@
 
         // kus' audio test -- END
     });
-    
+
     function createOscillatorsForCoords(audioCtx, gridSize, coordsArray){
       var result = [];
 
@@ -108,7 +138,7 @@
         var baseFrequency = 110; // A 110 Hz
         var x = element[1];
         var y = gridSize - element[0];
-        
+
         var frequency = baseFrequency * y;
         var normalizeFactor = (gridSize - 1) /2;
         var stereoPanning = (x - normalizeFactor) / normalizeFactor;
@@ -123,8 +153,8 @@
         var panNode = audioCtx.createStereoPanner();
         panNode.pan.value = stereoPanning;
         oscillator.connect(panNode);
-        
-        
+
+
         panNode.connect(audioCtx.destination);
         result.push(oscillator);
       });
@@ -138,7 +168,7 @@
             oscillator.stop(audioCtx.currentTime + noteDuration);
         });
     }
-    
+
     function getParameterByName(name, url) {
         if (!url) url = window.location.href;
         name = name.replace(/[\[\]]/g, "\\$&");

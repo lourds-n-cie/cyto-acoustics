@@ -54,11 +54,15 @@ updateNoDiff msg matrix = case msg of
     nextGeneration matrix
 
 
-update : Msg -> Matrix -> (Matrix, List (Int, Int))
-update msg matrix =
+update : Msg -> Matrix -> String -> (Matrix, List (Int, Int))
+update msg matrix mode =
   let newMatrix = updateNoDiff msg matrix
   in
-    ( newMatrix, diff matrix newMatrix )
+    if mode == "Diff"
+    then ( newMatrix, diff matrix newMatrix )
+    else if mode == "Full"
+    then ( newMatrix, listActiveCells newMatrix )
+    else (newMatrix, [])
 
 
 updateRowCol : Int -> Int -> Matrix -> Matrix
@@ -116,3 +120,13 @@ diffRows : Int -> Array Bool -> Array Bool -> List (Int, Int)
 diffRows row oldRow newRow =
   List.map2 (\(col, oldValue) (_, newValue) -> if newValue && oldValue /= newValue then [(row, col)] else []) (Array.toIndexedList oldRow) (Array.toIndexedList newRow)
     |> List.concatMap identity
+
+
+listActiveCells : Matrix -> List (Int, Int)
+listActiveCells matrix =
+     matrix
+        |> Array.toIndexedList
+        |> List.map (\(idx, arr) -> (idx, Array.toIndexedList arr))
+        |> List.concatMap (\(row, list) -> List.map (\(col, alive) -> (row, col, alive)) list)
+        |> List.filter (\(row, col, alive) -> alive)
+        |> List.map  (\(row, col, alive) -> (row, col))

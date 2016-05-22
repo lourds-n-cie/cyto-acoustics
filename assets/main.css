@@ -1,6 +1,6 @@
 /* general layout */
 body{
-    background-color: #282828 ;    
+    background-color: #282828 ;
     color: #F0F0F0 ;
 }
 
@@ -56,6 +56,7 @@ button {
     margin: auto;
     background-color: black;
 }
+
 .matrix table{
     empty-cells: show;
     border-spacing: 1px;
@@ -67,7 +68,7 @@ button {
     cursor: pointer;
 }
 
-.matrix table td.off{    
+.matrix table td.off{
     background-color: #101010;
 }
 
@@ -79,6 +80,92 @@ button {
 .matrix table td:hover{
     background-image: none;
     background-color: #C0C0C0;
+}
+
+.tools {
+    padding-top: 10px;
+}
+
+/* Full-Diff switch */
+.onoffswitch {
+    position: relative;
+    width: 70px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.onoffswitch-checkbox {
+    display: none;
+}
+
+.onoffswitch-label {
+    display: block;
+    overflow: hidden;
+    cursor: pointer;
+    border: 0;
+    border-radius: 28px;
+}
+
+.onoffswitch-inner {
+    display: block;
+    width: 200%;
+    margin-left: -100%;
+    transition: margin 0.3s ease-in 0s;
+}
+
+.onoffswitch-inner:before, .onoffswitch-inner:after {
+    display: block;
+    float: left;
+    width: 50%;
+    height: 24px;
+    padding: 0;
+    line-height: 24px;
+    font-size: 14px;
+    color: white;
+    font-family: Trebuchet, Arial, sans-serif;
+    font-weight: bold;
+    box-sizing: border-box;
+}
+
+.onoffswitch-inner:before {
+    content: "Full";
+    padding-left: 10px;
+    background-color: #BAB8B8;
+    color: #FFFFFF;
+}
+
+.onoffswitch-inner:after {
+    content: "Diff";
+    padding-right: 10px;
+    background-color: #BAB8B8;
+    color: #FFFFFF;
+    text-align: right;
+}
+
+.onoffswitch-switch {
+    display: block;
+    width: 30px;
+    margin: -3px;
+    background: #F5B400;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 48px;
+    border: 0;
+    border-radius: 30px;
+    transition: all 0.3s ease-in 0s;
+}
+
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+    margin-left: 0;
+}
+
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
+    right: 0px;
+    background-color: #F5B400;
 }
 
 
