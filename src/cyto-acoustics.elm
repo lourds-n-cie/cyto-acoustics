@@ -38,12 +38,13 @@ type alias Model =
   , mode: String
   , screenSize: Size
   , mousePosition: Position
+  , ship: Maybe(String)
   }
 
 
 init : Int -> (Model, Cmd Msg)
 init size =
-  (Model (Matrix.init size) False False "Full" (Size 0 0) (Position 0 0), Cmd.batch [getCurrentSeconds, getCurrentScreenSize] )
+  (Model (Matrix.init size) False False "Full" (Size 0 0) (Position 0 0) Maybe.Nothing, Cmd.batch [getCurrentSeconds, getCurrentScreenSize] )
 
 
 getCurrentSeconds =
@@ -83,10 +84,10 @@ update msg model =
     ToggleLive -> ( { model | live = not model.live }, Cmd.none)
     MatMsg matMsg ->
       let
-        (newMatrix, changes) = Matrix.update matMsg model.matrix model.mode
+        (newMatrix, changes) = Matrix.update matMsg model.matrix model.ship model.mode
       in
         ( { model | matrix = newMatrix }, newCells changes )
-    Ship kind -> (model, Cmd.none) --TODO switch ship kind
+    Ship kind -> ({ model | ship = (log "mode : " (if kind == "None" then Maybe.Nothing else (Maybe.Just kind)))}, Cmd.none)
     SwitchMode newMode ->  ( { model | mode = newMode }, Cmd.none )
     MouseMove position -> notifyAudio { model | mousePosition = position }
     ScreenResize size -> notifyAudio { model | screenSize = size }

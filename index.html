@@ -37,8 +37,14 @@
         </section>
         <section>
            <h3>Patterns</h3>
-           <button class="ship" style="display:inline;">Glider</button>
-            <span>/!\ WIP</span>
+           <button class="ship" style="display:inline;">None</button>
+        </section>
+        <section>
+            <h4>Gliders</h4>
+            <button class="ship" style="display:inline;">Glider UP</button>
+            <button class="ship" style="display:inline;">Glider RIGHT</button>
+            <button class="ship" style="display:inline;">Glider DOWN</button>
+            <button class="ship" style="display:inline;">Glider LEFT</button>
         </section>
     </div>
     <div class="col col2-3">
@@ -74,7 +80,7 @@
                 app.ports.switchMode.send("Diff");
             }
         });
-        
+
 
         //next generation -- START
         document.getElementById('nextStep').addEventListener("click", function() {
@@ -100,8 +106,9 @@
 
         var shipButtons = document.getElementsByClassName('ship');
         for (var i = 0; i < shipButtons.length; ++i) {
-            shipButtons[i].addEventListener("click", function() {
-                app.ports.nextStep.send("");
+            var shipButton = shipButtons[i];
+            shipButton.addEventListener("click", function(e) {
+                app.ports.ship.send(e.target.innerHTML);
             });
         }
         // next generation -- END

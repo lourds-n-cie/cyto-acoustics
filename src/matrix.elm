@@ -3,6 +3,7 @@ module Matrix exposing (Matrix, Msg(..), init, initRnd, update, updateNoDiff, si
 
 import Array exposing (Array)
 import Random
+import Dict
 
 
 type alias Matrix = Array (Array Bool)
@@ -45,6 +46,7 @@ rndRow size decision seed =
 type Msg =
   Toggle Int Int
   | NextGeneration
+  | Ship String Int Int
 
 
 updateNoDiff : Msg -> Matrix -> Matrix
@@ -53,11 +55,23 @@ updateNoDiff msg matrix = case msg of
       updateRowCol row col matrix
   NextGeneration ->
     nextGeneration matrix
+  Ship ship row col ->
+    addShip matrix ship row col
 
 
-update : Msg -> Matrix -> String -> (Matrix, List (Int, Int))
-update msg matrix mode =
-  let newMatrix = updateNoDiff msg matrix
+msgWithShip : Msg ->  Maybe(String) -> Msg
+msgWithShip msg ship =
+    case msg of
+      Toggle row col ->
+        ship
+            |> Maybe.map (\s -> Ship s row col)
+            |> Maybe.withDefault msg
+      _ -> msg
+
+
+update : Msg -> Matrix -> Maybe(String) -> String -> (Matrix, List (Int, Int))
+update msg matrix ship mode =
+  let newMatrix = updateNoDiff (msgWithShip msg ship) matrix
   in
     if mode == "Diff"
     then ( newMatrix, diff matrix newMatrix )
@@ -131,3 +145,45 @@ listActiveCells matrix =
         |> List.concatMap (\(row, list) -> List.map (\(col, alive) -> (row, col, alive)) list)
         |> List.filter (\(row, col, alive) -> alive)
         |> List.map  (\(row, col, alive) -> (row, col))
+
+
+addShip: Matrix -> String -> Int -> Int -> Matrix
+addShip matrix ship row col =
+    case (Dict.get ship ships) of
+        Maybe.Nothing -> matrix
+        Maybe.Just structure -> applyShip matrix row col structure
+
+
+applyShip: Matrix -> Int -> Int -> Structure -> Matrix
+applyShip matrix row col ship =
+    case ship of
+        [] -> matrix
+        (rowMod, colMod) :: tail -> applyShip (updateRowCol (row + rowMod) (col + colMod) matrix) row col tail
+
+
+type alias Structure = List (Int, Int)
+
+-- Structures turned DOWN
+gliderDOWN = [(0,0), (-1,0), (-2, 0), (0, 1), (-1, 2)]
+
+
+-- Dict String Structure
+ships = Dict.fromList [("Glider UP", rotateLeft (rotateLeft gliderDOWN)), ("Glider DOWN", gliderDOWN), ("Glider LEFT", rotateRight gliderDOWN), ("Glider RIGHT", rotateLeft gliderDOWN)]
+
+
+rotateLeft: Structure -> Structure
+rotateLeft struct =
+    struct
+        |> List.map (\(x, y) -> (-1*y, x))
+
+
+rotateRight: Structure -> Structure
+rotateRight struct =
+    struct
+        |> List.map (\(x, y) -> (y, -1*x))
+
+
+mirror: Structure -> Structure
+mirror struct =
+    struct
+        |> List.map (\(x, y) -> (-1*x, y))
