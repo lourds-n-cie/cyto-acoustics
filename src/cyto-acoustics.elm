@@ -88,8 +88,8 @@ update msg model =
         ( { model | matrix = newMatrix }, newCells changes )
     Ship kind -> (model, Cmd.none) --TODO switch ship kind
     SwitchMode newMode ->  ( { model | mode = newMode }, Cmd.none )
-    MouseMove position -> ( { model | mousePosition = position }, Cmd.none )
-    ScreenResize size -> ( { model | screenSize = size }, Cmd.none )
+    MouseMove position -> notifyAudio { model | mousePosition = position }
+    ScreenResize size -> notifyAudio { model | screenSize = size }
     --DragMsg sw ->
     --  if model.clicked then
     --    updateHelper sw model
@@ -97,6 +97,11 @@ update msg model =
     --    (model, Cmd.none)
     --MickeyDown -> ( { model | clicked = True }, Cmd.none)
     --MickeyUp -> ( { model | clicked = False }, Cmd.none)
+
+
+notifyAudio : Model -> (Model, Cmd Msg)
+notifyAudio model =
+  (model, audio (normed model.mousePosition model.screenSize))
 
 
 normed : Position -> Size -> NormedMousePosition
@@ -109,6 +114,9 @@ normed {x, y} {width, height} =
 
 
 port newCells : List (Int, Int) -> Cmd msg
+
+
+port audio : NormedMousePosition -> Cmd msg
 
 
 -- SUBSCRIPTIONS
