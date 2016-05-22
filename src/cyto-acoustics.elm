@@ -44,7 +44,7 @@ type alias Model =
 
 init : Int -> (Model, Cmd Msg)
 init size =
-  (Model (Matrix.init size) False False "Full" (Size 0 0) (Position 0 0) Maybe.Nothing, Cmd.batch [getCurrentSeconds, getCurrentScreenSize] )
+  (Model (Matrix.init size) False False "Diff" (Size 0 0) (Position 0 0) Maybe.Nothing, Cmd.batch [getCurrentSeconds, getCurrentScreenSize] )
 
 
 getCurrentSeconds =

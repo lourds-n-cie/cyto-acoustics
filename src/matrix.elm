@@ -156,19 +156,24 @@ addShip matrix ship row col =
 
 applyShip: Matrix -> Int -> Int -> Structure -> Matrix
 applyShip matrix row col ship =
-    case ship of
+    let
+        siz = (size matrix)
+    in case ship of
         [] -> matrix
-        (rowMod, colMod) :: tail -> applyShip (updateRowCol (row + rowMod) (col + colMod) matrix) row col tail
+        (rowMod, colMod) :: tail -> applyShip (updateRowCol ((row + rowMod+ siz) % siz) ((col + colMod+ siz) % siz) matrix) row col tail
 
 
 type alias Structure = List (Int, Int)
 
 -- Structures turned DOWN
 gliderDOWN = [(0,0), (-1,0), (-2, 0), (0, 1), (-1, 2)]
+gunDOWN = [(1,5), (1,6), (2,5), (2,6), (11,5), (11,6), (11,7), (12,4), (12,8), (13,3), (13,9), (14,3), (14,9), (15,6), (16,4), (16,8), (17,5), (17,6), (17,7),
+            (18, 6), (21,3), (21,4), (21,5),(22,3), (22,4), (22,5), (23,2), (23,6), (25,2), (25,6), (25,1), (25,7), (35,3), (35,4), (36,3), (36,4)]
 
 
 -- Dict String Structure
-ships = Dict.fromList [("Glider UP", rotateLeft (rotateLeft gliderDOWN)), ("Glider DOWN", gliderDOWN), ("Glider LEFT", rotateRight gliderDOWN), ("Glider RIGHT", rotateLeft gliderDOWN)]
+ships = Dict.fromList [("Glider UP", rotateLeft (rotateLeft gliderDOWN)), ("Glider DOWN", gliderDOWN), ("Glider LEFT", rotateRight gliderDOWN), ("Glider RIGHT", rotateLeft gliderDOWN),
+            ("Gun UP", rotateLeft (rotateLeft gunDOWN)), ("Gun DOWN", gunDOWN), ("Gun LEFT", rotateRight gunDOWN), ("Gun RIGHT", rotateLeft gunDOWN)]
 
 
 rotateLeft: Structure -> Structure

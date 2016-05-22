@@ -25,7 +25,7 @@
         </section>
         <section>
             <div class="onoffswitch">
-                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
+                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch">
                 <label class="onoffswitch-label" for="myonoffswitch">
                     <span class="onoffswitch-inner"></span>
                     <span class="onoffswitch-switch"></span>
@@ -45,6 +45,13 @@
             <button class="ship" style="display:inline;">Glider RIGHT</button>
             <button class="ship" style="display:inline;">Glider DOWN</button>
             <button class="ship" style="display:inline;">Glider LEFT</button>
+        </section>
+        <section>
+            <h4>Guns</h4>
+            <button class="ship" style="display:inline;">Gun UP</button>
+            <button class="ship" style="display:inline;">Gun RIGHT</button>
+            <button class="ship" style="display:inline;">Gun DOWN</button>
+            <button class="ship" style="display:inline;">Gun LEFT</button>
         </section>
     </div>
     <div class="col col2-3">
@@ -165,7 +172,7 @@
         oscillator.onended = function() {
           app.ports.audio.unsubscribe(subscriber);
         };
-        
+
         result.push(oscillator);
       });
 
