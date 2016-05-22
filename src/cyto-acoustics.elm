@@ -5,7 +5,8 @@ import Html.App as Html
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick, onMouseEnter)
 import Debug exposing (log)
-import Time exposing (..)
+import Time exposing (every, millisecond)
+import Task
 import Mouse
 import Array exposing (Array)
 
@@ -23,12 +24,16 @@ main =
 
 -- MODEL
 
+
 type alias Model = { matrix: Matrix.Matrix, clicked: Bool, live: Bool }
 
 
-init : Int -> (Model, Cmd a)
+init : Int -> (Model, Cmd Msg)
 init size =
-  (Model (Matrix.init size) False False, Cmd.none)
+  (Model (Matrix.init size) False False, getCurrentSeconds )
+
+
+getCurrentSeconds = Task.perform (\_ -> CurrentSeconds 0) (\time -> CurrentSeconds (floor (time / 1000) ) ) Time.now
 
 
 -- UPDATE
@@ -37,6 +42,7 @@ init size =
 type Msg =
   Tick
   | Clear
+  | CurrentSeconds Int
   | ToggleLive
   | MatMsg Matrix.Msg
   --| MickeyDown
@@ -47,7 +53,8 @@ type Msg =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    Clear -> init (Matrix.size model.matrix)
+    Clear -> ( model, getCurrentSeconds )
+    CurrentSeconds timestamp -> ( { model | matrix = Matrix.initRnd timestamp (Matrix.size model.matrix) }, Cmd.none )
     Tick -> if model.live then (update (MatMsg Matrix.NextGeneration) model) else (model, Cmd.none)
     ToggleLive -> ( { model | live = not model.live }, Cmd.none)
     MatMsg matMsg ->
@@ -70,8 +77,7 @@ port newCells : List (Int, Int) -> Cmd msg
 -- SUBSCRIPTIONS
 
 
--- incoming values
-port reset : (String -> msg) -> Sub msg
+port randomize : (Int -> msg) -> Sub msg
 
 
 port toggleLive : (String -> msg) -> Sub msg
@@ -85,7 +91,7 @@ subscriptions model =
   Sub.batch [
     --Mouse.downs (always MickeyDown),
     --Mouse.ups (always MickeyUp),
-    reset (always Clear),
+    randomize (always Clear),
     nextStep (always (MatMsg Matrix.NextGeneration)),
     every (150*millisecond) (always Tick),
     toggleLive (always ToggleLive)

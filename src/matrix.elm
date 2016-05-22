@@ -1,7 +1,8 @@
-module Matrix exposing (Matrix, Msg(..), init, update, updateNoDiff, size)
+module Matrix exposing (Matrix, Msg(..), init, initRnd, update, updateNoDiff, size)
 
 
 import Array exposing (Array)
+import Random
 
 
 type alias Matrix = Array (Array Bool)
@@ -16,9 +17,28 @@ size : Matrix -> Int
 size = Array.length
 
 
---initRnd : Int -> Matrix
---initRnd size =
---  ???
+initRnd : Int -> Int -> Matrix
+initRnd baseSeed size =
+  Array.initialize size identity
+    |> Array.foldl (\_ (list, seed) -> concatRndRow list size (\f -> f > 0.75) seed) ([], Random.initialSeed baseSeed)
+    |> fst
+    |> List.map Array.fromList
+    |> Array.fromList
+
+
+concatRndRow : List (List a) -> Int -> (Float -> a) -> Random.Seed -> (List (List a), Random.Seed)
+concatRndRow list size decision seed =
+  let
+    (newRow, newSeed) = rndRow size decision seed
+  in
+    (newRow :: list, newSeed)
+
+rndRow : Int -> (Float -> a) -> Random.Seed -> (List a, Random.Seed)
+rndRow size decision seed =
+  Random.float 0 1
+    |> Random.map decision
+    |> Random.list size
+    |> (flip Random.step) seed
 
 
 type Msg =

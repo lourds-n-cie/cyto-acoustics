@@ -17,7 +17,7 @@
 <div class="container">
     <div class="col col1-3">
         <section class="tools">
-            <button id="reset">Reset</button>
+            <button id="randomize">Randomize</button>
         </section>
         <section>
             <button id="nextStep">Next</button>
@@ -41,8 +41,8 @@
         var app = Elm.Cytoacoustics.embed(matrix, gridSize);
 
         // Clear action
-        document.getElementById('reset').addEventListener("click", function() {
-            app.ports.reset.send("");
+        document.getElementById('randomize').addEventListener("click", function() {
+            app.ports.randomize.send(0);
         });
 
         //next generation -- START
