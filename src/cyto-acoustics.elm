@@ -32,7 +32,7 @@ init size =
   (Model (Matrix.init size) False False "Full", getCurrentSeconds )
 
 
-getCurrentSeconds = Task.perform (\_ -> CurrentSeconds 0) (\time -> CurrentSeconds (floor (time / 1000) ) ) Time.now
+getCurrentSeconds = Task.perform (\_ -> Clear) (\time -> CurrentSeconds (floor (time / 1000) ) ) Time.now
 
 
 -- UPDATE
@@ -41,6 +41,7 @@ getCurrentSeconds = Task.perform (\_ -> CurrentSeconds 0) (\time -> CurrentSecon
 type Msg =
   Tick
   | Clear
+  | Randomize
   | CurrentSeconds Int
   | ToggleLive
   | MatMsg Matrix.Msg
@@ -54,7 +55,8 @@ type Msg =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    Clear -> ( model, getCurrentSeconds )
+    Randomize -> ( model, getCurrentSeconds )
+    Clear -> ( { model | matrix = Matrix.init (Matrix.size model.matrix) }, Cmd.none )
     CurrentSeconds timestamp -> ( { model | matrix = Matrix.initRnd timestamp (Matrix.size model.matrix) }, Cmd.none )
     Tick -> if model.live then (update (MatMsg Matrix.NextGeneration) model) else (model, Cmd.none)
     ToggleLive -> ( { model | live = not model.live }, Cmd.none)
@@ -80,19 +82,21 @@ port newCells : List (Int, Int) -> Cmd msg
 -- SUBSCRIPTIONS
 
 
--- incoming values
 port randomize : (Int -> msg) -> Sub msg
+port clear : (Int -> msg) -> Sub msg
 port toggleLive : (String -> msg) -> Sub msg
 port nextStep : (String -> msg) -> Sub msg
 port ship : (String -> msg) -> Sub msg
 port switchMode : (String -> msg) -> Sub msg
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.batch [
     --Mouse.downs (always MickeyDown),
     --Mouse.ups (always MickeyUp),
-    randomize (always Clear),
+    randomize (always Randomize),
+    clear (always Clear),
     nextStep (always (MatMsg Matrix.NextGeneration)),
     every (150*millisecond) (always Tick),
     toggleLive (always ToggleLive),

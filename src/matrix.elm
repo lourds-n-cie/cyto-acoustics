@@ -33,6 +33,7 @@ concatRndRow list size decision seed =
   in
     (newRow :: list, newSeed)
 
+
 rndRow : Int -> (Float -> a) -> Random.Seed -> (List a, Random.Seed)
 rndRow size decision seed =
   Random.float 0 1
