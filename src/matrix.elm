@@ -1,4 +1,4 @@
-module Matrix exposing (Matrix, Msg(..), init, update, size)
+module Matrix exposing (Matrix, Msg(..), init, update, updateNoDiff, size)
 
 
 import Array exposing (Array)
@@ -26,21 +26,24 @@ type Msg =
   | NextGeneration
 
 
+updateNoDiff : Msg -> Matrix -> Matrix
+updateNoDiff msg matrix = case msg of
+  Toggle row col ->
+      updateRowCol row col matrix
+  NextGeneration ->
+    nextGeneration matrix
+
+
 update : Msg -> Matrix -> (Matrix, List (Int, Int))
 update msg matrix =
-  case msg of
-    Toggle row col ->
-      updateRowCol row col matrix
-    NextGeneration ->
-      updateNextGen matrix
-
-
-updateRowCol : Int -> Int -> Matrix -> (Matrix, List (Int, Int))
-updateRowCol rowIdx colIdx matrix =
-  let
-    newMatrix = mapElement rowIdx matrix (\row -> mapElement colIdx row not)
+  let newMatrix = updateNoDiff msg matrix
   in
-  ( newMatrix, diff matrix newMatrix )
+    ( newMatrix, diff matrix newMatrix )
+
+
+updateRowCol : Int -> Int -> Matrix -> Matrix
+updateRowCol rowIdx colIdx matrix =
+  mapElement rowIdx matrix (\row -> mapElement colIdx row not)
 
 
 mapElement: Int -> Array a -> (a -> a) -> Array a
@@ -48,14 +51,6 @@ mapElement idx arr updater =
   Array.get idx arr
     |> Maybe.map (\value -> Array.set idx (updater value) arr)
     |> Maybe.withDefault arr
-
-
-updateNextGen : Matrix -> (Matrix, List (Int, Int))
-updateNextGen matrix =
-  let
-    newMatrix = nextGeneration matrix
-  in
-    (newMatrix, diff matrix newMatrix)
 
 
 nextGeneration: Matrix -> Matrix
