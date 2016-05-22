@@ -70,11 +70,13 @@ button {
 
 .matrix table td.off{
     background-color: #101010;
+    transition: background-color 0.1s;
 }
 
 .matrix table td.on {
 	background-image: radial-gradient( circle at center, #FFFF33, transparent 90%);
 	background-color: darkorange;
+    transition: background-color 0.1s;
 }
 
 .matrix table td:hover{
