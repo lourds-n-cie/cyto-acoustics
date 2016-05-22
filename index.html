@@ -53,6 +53,7 @@
         // remove loading message
         matrix.innerHTML = '';
         var gridSize = Number.parseInt(getParameterByName('gridSize'), 10) || 24;
+
         var app = Elm.Cytoacoustics.embed(matrix, gridSize);
 
         // Randomize action
@@ -160,7 +161,6 @@
         var panNode = audioCtx.createStereoPanner();
         panNode.pan.value = stereoPanning;
         oscillator.connect(panNode);
-
 
         panNode.connect(audioCtx.destination);
         result.push(oscillator);
