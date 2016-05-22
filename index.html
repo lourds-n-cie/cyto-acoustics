@@ -154,7 +154,7 @@
         panNode.connect(audioCtx.destination);
 
         var subscriber = function(scalings) {
-          currentBaseFreqMod = Math.pow(2, scalings.x * 4);
+          currentBaseFreqMod = Math.pow(2, scalings.x * 3);
           oscillator.frequency.value = currentBaseFreqMod * frequency;
           currentGain = scalings.y * scalings.y;
           gain.gain.value = currentGain;
