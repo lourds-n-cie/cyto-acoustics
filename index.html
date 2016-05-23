@@ -11,74 +11,80 @@
 </head>
 
 <body>
-<header>
-    <h1>Cyto-Acoustics</h1>
-</header>
-<a href="https://github.com/lourds-n-cie/cyto-acoustics"><img style="position: absolute; top: 0; right: 0; border: 0;"
-                                      src="https://camo.githubusercontent.com/652c5b9acfaddf3a9c326fa6bde407b87f7be0f4/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67"
-                                      alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"></a>
-<div class="container">
-    <div class="col col1-3">
-        <section class="tools">
-            <h3>Grid</h3>
-            <button id="randomize">New random</button>
-            <button id="clear">Clear</button>   
-        </section>
-        <section class="tools">
-            <h3>Transitions <small id="iterationStatus">(Paused)</small></h3>
-            <div>
-                <div class="onoffswitch">
-                    <input type="checkbox" name="playAllNotes" class="onoffswitch-checkbox" id="playAllNotesToggle">
-                    <label class="onoffswitch-label" for="playAllNotesToggle">
-                        <span class="onoffswitch-inner"></span>
-                        <span class="onoffswitch-switch"></span>
-                    </label>
-                </div>
-                <small id="hintModeDiff">Play only sound of new cells</small>
-                <small id="hintModeFull" style="display:none;">Play sound for all cells</small>
-        </section>
-        <section class="tools">
-            <h4>Theremin mode on / off</h4>
-            <div class="onoffswitch">
-                <input type="checkbox" name="thereminswitch" class="onoffswitch-checkbox" id="thereminswitch">
-                <label class="onoffswitch-label" for="thereminswitch">
-                    <span class="onoffswitch-inner"></span>
-                    <span class="onoffswitch-switch"></span>
-                </label>
-            </div>
-            <small id="hintThereminOff">Mouving the mouse has no effect on the sound</small>
-            <small id="hintThereminOn" style="display:none;">Move the mouse to modulate the sounds</small>
-            <div class="controller">
-                Step-by-step : <button id="nextStep">&#9658;&#10074;</button><br/>
-                Auto : <button id="play">&#9658; / &#10074;&#10074;</button>
-            </div>            
-        </section>
-        <section>
-           <h3>Patterns</h3>
-           <button class="ship" style="display:inline;">None</button>
-        </section>
-        <section>
-            <h4>Gliders</h4>
-            <button class="ship" style="display:inline;">Glider UP</button>
-            <button class="ship" style="display:inline;">Glider RIGHT</button>
-            <button class="ship" style="display:inline;">Glider DOWN</button>
-            <button class="ship" style="display:inline;">Glider LEFT</button>
-        </section>
-        <section>
-            <h4>Guns</h4>
-            <button class="ship" style="display:inline;">Gun UP</button>
-            <button class="ship" style="display:inline;">Gun RIGHT</button>
-            <button class="ship" style="display:inline;">Gun DOWN</button>
-            <button class="ship" style="display:inline;">Gun LEFT</button>
-        </section>
+    <header>
+        <h1>Cyto-Acoustics</h1>
+    </header>
+    <a href="https://github.com/lourds-n-cie/cyto-acoustics"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/652c5b9acfaddf3a9c326fa6bde407b87f7be0f4/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67"
+            alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"></a>
+    <div class="container">
+        <div class="col col1-3">
+            <form autocomplete="off">
+                <section>
+                    <h3>Grid</h3>
+                    <button id="randomize" type="button"><i>&#x27f3;</i> Generate new random grid</button>
+                    <button id="clear" type="button">Clear</button>
+                    <div class="modeControl">
+                        <div class="onoffswitch">
+                            <input type="checkbox" name="playAllNotes" class="onoffswitch-checkbox" id="playAllNotesToggle">
+                            <label class="onoffswitch-label" for="playAllNotesToggle">
+                                <span class="onoffswitch-inner"></span>
+                                <span class="onoffswitch-switch"></span>
+                            </label>
+                        </div>
+                        <small id="hintModeDiff"><em>Play only sound of new cells</em></small>
+                        <small id="hintModeFull" style="display:none;"><em>Play sound for all cells</em></small>
+                    </div>
+                </section>
+                <section>
+                    <h3>Iterations</h3>
+                    <div class="controller">
+                        Auto : <button id="play" type="button">&#x23f5;/&#x23f8;</button><em><small id="iterationStatus">(Paused)</small></em><br/>
+                        Step-by-step : <button id="nextStep" type="button">&#x23ed;</button>
+                    </div>
+                </section>
+                <section >
+                    <h3>Theremin</h4>
+                    <div class="onoffswitch">
+                        <input type="checkbox" name="thereminswitch" class="onoffswitch-checkbox" id="thereminswitch">
+                        <label class="onoffswitch-label" for="thereminswitch">
+                            <span class="onoffswitch-inner"></span>
+                            <span class="onoffswitch-switch"></span>
+                        </label>
+                    </div>
+                    <small id="hintThereminOff">Mouving the mouse has no effect on the sound</small>
+                    <small id="hintThereminOn" style="display:none;">Move the mouse to modulate the sounds</small>
+                </section>
+                <section class="brush">
+                    <h3>Patterns</h3>
+                    <small><em>What will be drawn on the grid when you click</em></small>
+                    <div class="radio-group">
+                        <h4>Cells</h4>
+                        <label class="pattern-selector"><input type="radio" name="brush" value="None" checked>Single cell <small>(default)</small></label>
+                    </div>
+                    <div class="radio-group">
+                        <h4>Gliders</h4>
+                        <label class="pattern-selector"><input type="radio" name="brush" value="Glider UP">Up &uarr;</label>
+                        <label class="pattern-selector"><input type="radio" name="brush" value="Glider RIGHT">Right &rarr;</label>
+                        <label class="pattern-selector"><input type="radio" name="brush" value="Glider DOWN">Down &darr;</label>
+                        <label class="pattern-selector"><input type="radio" name="brush" value="Glider LEFT">Left &larr;</label>
+                    </div>
+                    <div class="radio-group">
+                        <h4>Guns</h4>
+                        <label class="pattern-selector"><input type="radio" name="brush" value="Gun UP">Up &uarr;</label>
+                        <label class="pattern-selector"><input type="radio" name="brush" value="Gun RIGHT">Right &rarr;</label>
+                        <label class="pattern-selector"><input type="radio" name="brush" value="Gun DOWN">Down &darr;</label>
+                        <label class="pattern-selector"><input type="radio" name="brush" value="Gun LEFT">Left &larr;</label>
+                    </div>
+                </section>
+            </form>
+        </div>
+        <div class="col col2-3">
+            <div id="matrix" class="matrix">Loading ...</div>
+        </div>
     </div>
-    <div class="col col2-3">
-        <div id="matrix" class="matrix">Loading ...</div>
-    </div>
-</div>
-<script type="text/javascript" src="target/cyto-acoustics.js"></script>
-<script type="text/javascript">
-    document.addEventListener('DOMContentLoaded', function() {
+    <script type="text/javascript" src="target/cyto-acoustics.js"></script>
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
         var matrix = document.getElementById('matrix');
         // remove loading message
         matrix.innerHTML = '';
@@ -145,16 +151,23 @@
             }
             app.ports.toggleLive.send("");
         });
-
-        var shipButtons = document.getElementsByClassName('ship');
-        for (var i = 0; i < shipButtons.length; ++i) {
-            var shipButton = shipButtons[i];
-            shipButton.addEventListener("click", function(e) {
-                app.ports.ship.send(e.target.innerHTML);
-            });
-        }
         // next generation -- END
 
+        // patterns -- START
+        
+        var brushRadios = document.querySelectorAll('input[type=radio][name="brush"]');
+
+        var brushChangeHandler = function(event) {
+            console.log("radio", this.value);
+            app.ports.ship.send(this.value);
+        }
+
+        Array.prototype.forEach.call(brushRadios, function(radio) {
+            radio.addEventListener('change', brushChangeHandler);
+        });
+        
+        // patterns -- END
+        
         var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
         app.ports.newCells.subscribe(function(newCells) {
@@ -229,7 +242,6 @@
         if (!results[2]) return '';
         return decodeURIComponent(results[2].replace(/\+/g, " "));
     }
-
     </script>
 </body>
 
