@@ -24,13 +24,8 @@
             <button id="randomize">New random</button>
             <button id="clear">Clear</button>   
         </section>
-        <section>
-            <button id="nextStep" style="display:inline;">Next</button>
-            <button id="play">&#9658; Play</button>
-            <button id="pause" style="display:none;">&#10074;&#10074; Pause</button>
-        </section>
         <section class="tools">
-            <h3>Transitions</h3>
+            <h3>Transitions <small id="iterationStatus">(Paused)</small></h3>
             <div>
                 <div class="onoffswitch">
                     <input type="checkbox" name="playAllNotes" class="onoffswitch-checkbox" id="playAllNotesToggle">
@@ -53,6 +48,10 @@
             </div>
             <small id="hintThereminOff">Mouving the mouse has no effect on the sound</small>
             <small id="hintThereminOn" style="display:none;">Move the mouse to modulate the sounds</small>
+            <div class="controller">
+                Step-by-step : <button id="nextStep">&#9658;&#10074;</button><br/>
+                Auto : <button id="play">&#9658; / &#10074;&#10074;</button>
+            </div>            
         </section>
         <section>
            <h3>Patterns</h3>
@@ -130,25 +129,21 @@
 
 
         //next generation -- START
-        document.getElementById('nextStep').addEventListener("click", function() {
+        var nextStepButton = document.getElementById('nextStep');
+        nextStepButton.addEventListener("click", function() {
             app.ports.nextStep.send("");
         });
 
         document.getElementById('play').addEventListener("click", function() {
-            document.getElementById('pause').style.display = 'inline';
-            document.getElementById('play').style.display = 'none';
-
+            var statusIndicator = document.getElementById('iterationStatus');
+            if(nextStepButton.hasAttribute('disabled')){
+                nextStepButton.removeAttribute('disabled');
+                statusIndicator.innerText = '(Paused)';
+            }else{
+                nextStepButton.setAttribute('disabled', true);
+                statusIndicator.innerText = '(Playing)';
+            }
             app.ports.toggleLive.send("");
-
-            document.getElementById('pause').addEventListener("click", function(e) {
-                document.getElementById('play').style.display = 'inline';
-                document.getElementById('pause').style.display = 'none';
-
-                app.ports.toggleLive.send("");
-
-                // remove this handler
-                e.target.removeEventListener(e.type, arguments.callee);
-            });
         });
 
         var shipButtons = document.getElementsByClassName('ship');
