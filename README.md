@@ -1,3 +1,5 @@
 # cyto-acoustics
 
-Viw it live at http://lourds-n-cie.github.io/cytoacoustics/
+Live demo: http://lourds-n-cie.github.io/cytoacoustics/
+
+Caution, noise!
