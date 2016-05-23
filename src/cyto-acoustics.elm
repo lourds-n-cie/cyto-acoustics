@@ -38,7 +38,7 @@ type alias Model =
   , mode: String
   , screenSize: Size
   , mousePosition: Position
-  , ship: Maybe(String)
+  , ship: Maybe (String)
   }
 
 
@@ -65,10 +65,11 @@ type Msg =
   | CurrentSeconds Int
   | ToggleLive
   | MatMsg Matrix.Msg
-  | Ship (String)
   | SwitchMode (String)
   | MouseMove Position
   | ScreenResize Size
+  | SelectShip String
+  | CellClick Int Int
   --| MickeyDown
   --| MickeyUp
   --| DragMsg Switch
@@ -77,20 +78,34 @@ type Msg =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    Randomize -> ( model, getCurrentSeconds )
-    Clear -> ( { model | matrix = Matrix.init (Matrix.size model.matrix) }, Cmd.none )
-    CurrentSeconds timestamp -> ( { model | matrix = Matrix.initRnd timestamp (Matrix.size model.matrix) }, Cmd.none )
-    Tick -> if model.live then (update (MatMsg Matrix.NextGeneration) model) else (model, Cmd.none)
-    ToggleLive -> ( { model | live = not model.live }, Cmd.none)
+    Randomize ->
+      ( model, getCurrentSeconds )
+    Clear ->
+      ( { model | matrix = Matrix.init (Matrix.size model.matrix) }, Cmd.none )
+    CurrentSeconds timestamp ->
+      ( { model | matrix = Matrix.initRnd timestamp (Matrix.size model.matrix) }, Cmd.none )
+    Tick ->
+      if model.live then (update (MatMsg Matrix.NextGeneration) model) else (model, Cmd.none)
+    ToggleLive ->
+      ( { model | live = not model.live }, Cmd.none)
     MatMsg matMsg ->
       let
-        (newMatrix, changes) = Matrix.update matMsg model.matrix model.ship model.mode
+        (newMatrix, onCells, freshOnCells) = Matrix.update matMsg model.matrix
       in
-        ( { model | matrix = newMatrix }, newCells changes )
-    Ship kind -> ({ model | ship = (log "mode : " (if kind == "None" then Maybe.Nothing else (Maybe.Just kind)))}, Cmd.none)
-    SwitchMode newMode ->  ( { model | mode = newMode }, Cmd.none )
-    MouseMove position -> notifyAudio { model | mousePosition = position }
-    ScreenResize size -> notifyAudio { model | screenSize = size }
+        ( { model | matrix = newMatrix }, cellNotification model.mode onCells freshOnCells )
+    CellClick row col ->
+      case model.ship of
+        Maybe.Nothing -> update (MatMsg (Matrix.Toggle row col)) model
+        Maybe.Just ship -> update (MatMsg (Matrix.Ship ship row col)) model
+    SelectShip kind ->
+      ( { model | ship = if kind == "None" then Maybe.Nothing else (Maybe.Just kind) }, Cmd.none )
+    SwitchMode newMode ->
+      ( { model | mode = newMode }, Cmd.none )
+    MouseMove position ->
+      notifyAudio { model | mousePosition = position }
+    ScreenResize size ->
+      notifyAudio { model | screenSize = size }
+
     --DragMsg sw ->
     --  if model.clicked then
     --    updateHelper sw model
@@ -98,6 +113,13 @@ update msg model =
     --    (model, Cmd.none)
     --MickeyDown -> ( { model | clicked = True }, Cmd.none)
     --MickeyUp -> ( { model | clicked = False }, Cmd.none)
+
+
+cellNotification : String -> List (Int, Float) -> List (Int, Float) -> Cmd Msg
+cellNotification mode onCells freshOnCells =
+  case mode of
+    "Diff" -> newCells freshOnCells
+    _ -> newCells onCells
 
 
 notifyAudio : Model -> (Model, Cmd Msg)
@@ -114,7 +136,7 @@ normed {x, y} {width, height} =
     NormedMousePosition xNormed yNormed
 
 
-port newCells : List (Int, Int) -> Cmd msg
+port newCells : List (Int, Float) -> Cmd msg
 
 
 port audio : NormedMousePosition -> Cmd msg
@@ -139,7 +161,7 @@ subscriptions model =
     , nextStep (always (MatMsg Matrix.NextGeneration))
     , every (150*millisecond) (always Tick)
     , toggleLive (always ToggleLive)
-    , ship Ship
+    , ship SelectShip
     , switchMode SwitchMode
     , Mouse.moves MouseMove
     , Window.resizes ScreenResize
@@ -155,7 +177,7 @@ viewCell : Int -> Int -> Bool -> Html Msg
 viewCell row col cell =
   td
     [ class (if cell then "on" else "off")
-    , onClick (MatMsg (Matrix.Toggle row col))
+    , onClick (CellClick row col)
     --, onMouseEnter (DragMsg msg)
     ]
     []

@@ -135,13 +135,15 @@
       var result = [];
 
       coordsArray.forEach(function(element, index, array){
-        var baseFrequency = 55; // A 55 Hz
-        var x = element[1];
-        var y = gridSize - element[0];
+        console.log("balance", element[1]);
+        console.log("row", element[0]);
+            
+        var stereoPanning = element[1];
 
+        var baseFrequency = 55; // A 55 Hz
+        var y = gridSize - element[0];
         var frequency = baseFrequency * y;
-        var normalizeFactor = (gridSize - 1) /2;
-        var stereoPanning = (x - normalizeFactor) / normalizeFactor;
+
         //console.log({x : x, y:y, frequency : frequency, pan: stereoPanning})
 
         // create Oscillator node
