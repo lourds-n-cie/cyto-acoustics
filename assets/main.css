@@ -133,14 +133,14 @@ button {
 }
 
 .onoffswitch-inner:before {
-    content: "Full";
+    content: "O";
     padding-left: 10px;
     background-color: #BAB8B8;
     color: #FFFFFF;
 }
 
 .onoffswitch-inner:after {
-    content: "Diff";
+    content: "I";
     padding-right: 10px;
     background-color: #BAB8B8;
     color: #FFFFFF;

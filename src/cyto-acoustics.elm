@@ -39,12 +39,13 @@ type alias Model =
   , screenSize: Size
   , mousePosition: Position
   , ship: Maybe (String)
+  , theremin: Bool
   }
 
 
 init : Int -> (Model, Cmd Msg)
 init size =
-  (Model (Matrix.init size) False False "Diff" (Size 0 0) (Position 0 0) Maybe.Nothing, Cmd.batch [getCurrentSeconds, getCurrentScreenSize] )
+  (Model (Matrix.init size) False False "Diff" (Size 0 0) (Position 0 0) Maybe.Nothing False, Cmd.batch [getCurrentSeconds, getCurrentScreenSize] )
 
 
 getCurrentSeconds =
@@ -70,6 +71,7 @@ type Msg =
   | ScreenResize Size
   | SelectShip String
   | CellClick Int Int
+  | ToggleTheremin
   --| MickeyDown
   --| MickeyUp
   --| DragMsg Switch
@@ -105,6 +107,8 @@ update msg model =
       notifyAudio { model | mousePosition = position }
     ScreenResize size ->
       notifyAudio { model | screenSize = size }
+    ToggleTheremin ->
+      ( { model | theremin = not model.theremin }, audio (NormedMousePosition (1/3) 1) )
 
     --DragMsg sw ->
     --  if model.clicked then
@@ -151,23 +155,37 @@ port toggleLive : (String -> msg) -> Sub msg
 port nextStep : (String -> msg) -> Sub msg
 port ship : (String -> msg) -> Sub msg
 port switchMode : (String -> msg) -> Sub msg
+port toggleTheremin : (String -> msg) -> Sub msg
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Sub.batch
-    [ randomize (always Randomize)
-    , clear (always Clear)
-    , nextStep (always (MatMsg Matrix.NextGeneration))
-    , every (150*millisecond) (always Tick)
-    , toggleLive (always ToggleLive)
-    , ship SelectShip
-    , switchMode SwitchMode
-    , Mouse.moves MouseMove
-    , Window.resizes ScreenResize
-    --, Mouse.downs (always MickeyDown)
-    --, Mouse.ups (always MickeyUp)
-    ]
+  let
+    theremins =
+      if model.theremin then
+        [ Mouse.moves MouseMove , Window.resizes ScreenResize ]
+      else
+        []
+    ticks =
+      if model.live then
+        [ every (150*millisecond) (always Tick) ]
+      else
+        []
+  in
+    Sub.batch (
+      theremins ++
+      ticks ++
+      [ randomize (always Randomize)
+      , clear (always Clear)
+      , nextStep (always (MatMsg Matrix.NextGeneration))
+      , toggleLive (always ToggleLive)
+      , ship SelectShip
+      , switchMode SwitchMode
+      , toggleTheremin (always ToggleTheremin)
+      --, Mouse.downs (always MickeyDown)
+      --, Mouse.ups (always MickeyUp)
+      ]
+    )
 
 
 -- VIEW

@@ -24,16 +24,29 @@
             <button id="clear">Clear</button>
         </section>
         <section>
+            <button id="nextStep" style="display:inline;">Next</button>
+            <button id="play">&#9658; Play</button>
+            <button id="pause" style="display:none;">&#10074;&#10074; Pause</button>
+        </section>
+        <section>
+            <h4>Play sound for new cells / all cells</h4>
             <div class="onoffswitch">
-                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch">
-                <label class="onoffswitch-label" for="myonoffswitch">
+                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="fulldiffswitch">
+                <label class="onoffswitch-label" for="fulldiffswitch">
                     <span class="onoffswitch-inner"></span>
                     <span class="onoffswitch-switch"></span>
                 </label>
             </div>
-            <button id="nextStep" style="display:inline;">Next</button>
-            <button id="play">&#9658; Play</button>
-            <button id="pause" style="display:none;">&#10074;&#10074; Pause</button>
+        </section>
+        <section>
+            <h4>Theremin mode on / off</h4>
+            <div class="onoffswitch">
+                <input type="checkbox" name="thereminswitch" class="onoffswitch-checkbox" id="thereminswitch">
+                <label class="onoffswitch-label" for="thereminswitch">
+                    <span class="onoffswitch-inner"></span>
+                    <span class="onoffswitch-switch"></span>
+                </label>
+            </div>
         </section>
         <section>
            <h3>Patterns</h3>
@@ -79,13 +92,19 @@
         });
 
         // diff vs. full play
-        var onOffSwitch = document.getElementById('myonoffswitch');
+        var onOffSwitch = document.getElementById('fulldiffswitch');
         onOffSwitch.addEventListener("click", function() {
             if (onOffSwitch.checked) {
                 app.ports.switchMode.send("Full");
             } else {
                 app.ports.switchMode.send("Diff");
             }
+        });
+
+        // theremin mode
+        var thereminSwitch = document.getElementById('thereminswitch');
+        thereminSwitch.addEventListener("click", function() {
+            app.ports.toggleTheremin.send("");
         });
 
 
