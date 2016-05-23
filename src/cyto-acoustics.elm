@@ -3,7 +3,7 @@ port module Cytoacoustics exposing (..)
 import Html exposing (..)
 import Html.App as Html
 import Html.Attributes exposing (class)
-import Html.Events exposing (onClick, onMouseEnter)
+import Html.Events exposing (onClick, onMouseEnter, onMouseDown, onMouseUp)
 import Debug exposing (log)
 import Time exposing (every, millisecond)
 import Task
@@ -72,9 +72,8 @@ type Msg =
   | SelectShip String
   | CellClick Int Int
   | ToggleTheremin
-  --| MickeyDown
-  --| MickeyUp
-  --| DragMsg Switch
+  | MouseDown Bool
+  | CellEnter Int Int
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -109,14 +108,12 @@ update msg model =
       notifyAudio { model | screenSize = size }
     ToggleTheremin ->
       ( { model | theremin = not model.theremin }, audio (NormedMousePosition (1/3) 1) )
-
-    --DragMsg sw ->
-    --  if model.clicked then
-    --    updateHelper sw model
-    --  else
-    --    (model, Cmd.none)
-    --MickeyDown -> ( { model | clicked = True }, Cmd.none)
-    --MickeyUp -> ( { model | clicked = False }, Cmd.none)
+    CellEnter row col ->
+      if model.clicked then
+        update (CellClick row col) model
+      else
+        (model, Cmd.none)
+    MouseDown bool -> ( { model | clicked = bool }, Cmd.none)
 
 
 cellNotification : String -> List (Int, Float) -> List (Int, Float) -> Cmd Msg
@@ -182,8 +179,6 @@ subscriptions model =
       , ship SelectShip
       , switchMode SwitchMode
       , toggleTheremin (always ToggleTheremin)
-      --, Mouse.downs (always MickeyDown)
-      --, Mouse.ups (always MickeyUp)
       ]
     )
 
@@ -194,9 +189,9 @@ subscriptions model =
 viewCell : Int -> Int -> Bool -> Html Msg
 viewCell row col cell =
   td
-    [ class (if cell then "on" else "off")
+    [ class (if cell then "on noselect" else "off noselect")
     , onClick (CellClick row col)
-    --, onMouseEnter (DragMsg msg)
+    , onMouseEnter (CellEnter row col)
     ]
     []
 
@@ -206,7 +201,7 @@ viewRow row cells =
   cells
     |> Array.indexedMap (viewCell row)
     |> Array.toList
-    |> tr []
+    |> tr [ class "noselect" ]
 
 
 view : Model -> Html Msg
@@ -214,4 +209,8 @@ view model =
   model.matrix
     |> Array.indexedMap viewRow
     |> Array.toList
-    |> table []
+    |> table
+      [ class "noselect"
+      , onMouseDown (MouseDown True)
+      , onMouseUp (MouseDown False)
+      ]
