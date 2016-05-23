@@ -20,25 +20,29 @@
 <div class="container">
     <div class="col col1-3">
         <section class="tools">
-            <button id="randomize">Randomize</button>
-            <button id="clear">Clear</button>
+            <h3>Grid</h3>
+            <button id="randomize">New random</button>
+            <button id="clear">Clear</button>   
         </section>
         <section>
             <button id="nextStep" style="display:inline;">Next</button>
             <button id="play">&#9658; Play</button>
             <button id="pause" style="display:none;">&#10074;&#10074; Pause</button>
         </section>
-        <section>
-            <h4>Play sound for new cells / all cells</h4>
-            <div class="onoffswitch">
-                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="fulldiffswitch">
-                <label class="onoffswitch-label" for="fulldiffswitch">
-                    <span class="onoffswitch-inner"></span>
-                    <span class="onoffswitch-switch"></span>
-                </label>
-            </div>
+        <section class="tools">
+            <h3>Transitions</h3>
+            <div>
+                <div class="onoffswitch">
+                    <input type="checkbox" name="playAllNotes" class="onoffswitch-checkbox" id="playAllNotesToggle">
+                    <label class="onoffswitch-label" for="playAllNotesToggle">
+                        <span class="onoffswitch-inner"></span>
+                        <span class="onoffswitch-switch"></span>
+                    </label>
+                </div>
+                <small id="hintModeDiff">Play only sound of new cells</small>
+                <small id="hintModeFull" style="display:none;">Play sound for all cells</small>
         </section>
-        <section>
+        <section class="tools">
             <h4>Theremin mode on / off</h4>
             <div class="onoffswitch">
                 <input type="checkbox" name="thereminswitch" class="onoffswitch-checkbox" id="thereminswitch">
@@ -47,6 +51,8 @@
                     <span class="onoffswitch-switch"></span>
                 </label>
             </div>
+            <small id="hintThereminOff">Mouving the mouse has no effect on the sound</small>
+            <small id="hintThereminOn" style="display:none;">Move the mouse to modulate the sounds</small>
         </section>
         <section>
            <h3>Patterns</h3>
@@ -92,18 +98,33 @@
         });
 
         // diff vs. full play
-        var onOffSwitch = document.getElementById('fulldiffswitch');
-        onOffSwitch.addEventListener("click", function() {
-            if (onOffSwitch.checked) {
+        var playAllNotesToggle = document.getElementById('playAllNotesToggle');
+        playAllNotesToggle.addEventListener("click", function() {
+            var fullHint = document.getElementById('hintModeFull');
+            var diffHint = document.getElementById('hintModeDiff');
+            if (playAllNotesToggle.checked) {
                 app.ports.switchMode.send("Full");
+                fullHint.style.display = 'inline';
+                diffHint.style.display = 'none';
             } else {
                 app.ports.switchMode.send("Diff");
+                fullHint.style.display = 'none';
+                diffHint.style.display = 'inline';
             }
         });
 
         // theremin mode
         var thereminSwitch = document.getElementById('thereminswitch');
         thereminSwitch.addEventListener("click", function() {
+            var onHint = document.getElementById('hintThereminOn');
+            var offHint = document.getElementById('hintThereminOff');
+            if (thereminSwitch.checked) {
+                onHint.style.display = 'inline';
+                offHint.style.display = 'none';
+            } else {
+                onHint.style.display = 'none';
+                offHint.style.display = 'inline';
+            }
             app.ports.toggleTheremin.send("");
         });
 
