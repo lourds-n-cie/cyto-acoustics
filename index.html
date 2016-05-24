@@ -18,7 +18,7 @@
             alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"></a>
     <div class="container">
         <div class="col col1-3">
-            <form autocomplete="off">
+            <form autocomplete="off" method="GET">
                 <section>
                     <h3>Grid</h3>
                     <button id="randomize" type="button"><i>&#x27f3;</i> Generate new random grid</button>
@@ -34,6 +34,15 @@
                         <small id="hintModeDiff"><em>Play only sound of new cells</em></small>
                         <small id="hintModeFull" style="display:none;"><em>Play sound for all cells</em></small>
                     </div>
+                    <label for "gridSizeSelector">Size : </label>
+                    <select id="gridSizeSelector" name="gridSize">
+                        <option value="8">8 &times; 8</option>
+                        <option value="16">16 &times; 16</option>
+                        <option value="24">24 &times; 24 (default)</option>
+                        <option value="32">32 &times; 32</option>
+                        <option value="48">48 &times; 48 (slow)</option>
+                        <option value="64">64 &times; 64 (dead slow)</option>
+                    </select>
                 </section>
                 <section>
                     <h3>Iterations</h3>
@@ -89,6 +98,12 @@
         // remove loading message
         matrix.innerHTML = '';
         var gridSize = Number.parseInt(getParameterByName('gridSize'), 10) || 24;
+        
+        var gridSizeSelector = document.getElementById('gridSizeSelector');
+        gridSizeSelector.value = gridSize.toString();
+        gridSizeSelector.addEventListener('change', function(){
+           this.form.submit();
+        });
 
         var app = Elm.Cytoacoustics.embed(matrix, gridSize);
 
