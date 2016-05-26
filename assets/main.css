@@ -226,6 +226,9 @@ button > i {
 .pattern-selector{
     font-size: 1em;
     padding:4px;
+    width: 3em;
+    display:inline-block;
+    text-align: center;
 }
 
 .pattern-selector input{
