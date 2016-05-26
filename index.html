@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Cellular acoustics</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
     <link href="assets/vendor/normalize.css" rel="stylesheet">
     <link href="assets/main.css" rel="stylesheet">
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
@@ -47,8 +48,8 @@
                 <section>
                     <h3>Iterations</h3>
                     <div class="controller">
-                        Auto : <button id="play" type="button">&#x23f5;/&#x23f8;</button><em><small id="iterationStatus">(Paused)</small></em><br/>
-                        Step-by-step : <button id="nextStep" type="button">&#x23ed;</button>
+                        Auto : <button id="play" type="button" class="fa fa-play"></button><br/>
+                        Step-by-step : <button id="nextStep" type="button" class="fa fa-step-forward"></button>
                     </div>
                 </section>
                 <section >
@@ -68,21 +69,21 @@
                     <small><em>What will be drawn on the grid when you click</em></small>
                     <div class="radio-group">
                         <h4>Cells</h4>
-                        <label class="pattern-selector"><input type="radio" name="brush" value="None" checked>Single cell <small>(default)</small></label>
+                        <input type="radio" name="brush" value="None" class="patternradio" id="patternsingle" checked><label class="pattern-selector" for="patternsingle">Single cell <small>(default)</small></label>
                     </div>
                     <div class="radio-group">
                         <h4>Gliders</h4>
-                        <label class="pattern-selector"><input type="radio" name="brush" value="Glider UP">Up &uarr;</label>
-                        <label class="pattern-selector"><input type="radio" name="brush" value="Glider RIGHT">Right &rarr;</label>
-                        <label class="pattern-selector"><input type="radio" name="brush" value="Glider DOWN">Down &darr;</label>
-                        <label class="pattern-selector"><input type="radio" name="brush" value="Glider LEFT">Left &larr;</label>
+                        <input type="radio" name="brush" value="Glider UP" class="patternradio" id="patterngu" ><label class="pattern-selector" for="patterngu">Up &uarr;</label>
+                        <input type="radio" name="brush" value="Glider RIGHT" class="patternradio" id="patterngr" ><label class="pattern-selector" for="patterngr">Right &rarr;</label>
+                        <input type="radio" name="brush" value="Glider DOWN" class="patternradio" id="patterngd" ><label class="pattern-selector" for="patterngd">Down &darr;</label>
+                        <input type="radio" name="brush" value="Glider LEFT" class="patternradio" id="patterngl" ><label class="pattern-selector" for="patterngl">Left &larr;</label>
                     </div>
                     <div class="radio-group">
                         <h4>Guns</h4>
-                        <label class="pattern-selector"><input type="radio" name="brush" value="Gun UP">Up &uarr;</label>
-                        <label class="pattern-selector"><input type="radio" name="brush" value="Gun RIGHT">Right &rarr;</label>
-                        <label class="pattern-selector"><input type="radio" name="brush" value="Gun DOWN">Down &darr;</label>
-                        <label class="pattern-selector"><input type="radio" name="brush" value="Gun LEFT">Left &larr;</label>
+                        <input type="radio" name="brush" value="Gun UP" class="patternradio" id="patternguu" ><label class="pattern-selector" for="patternguu">Up &uarr;</label>
+                        <input type="radio" name="brush" value="Gun RIGHT" class="patternradio" id="patterngur" ><label class="pattern-selector" for="patterngur">Right &rarr;</label>
+                        <input type="radio" name="brush" value="Gun DOWN" class="patternradio" id="patterngud" ><label class="pattern-selector" for="patterngud">Down &darr;</label>
+                        <input type="radio" name="brush" value="Gun LEFT" class="patternradio" id="patterngul" ><label class="pattern-selector" for="patterngul">Left &larr;</label>
                     </div>
                 </section>
             </form>
@@ -155,14 +156,14 @@
             app.ports.nextStep.send("");
         });
 
-        document.getElementById('play').addEventListener("click", function() {
-            var statusIndicator = document.getElementById('iterationStatus');
+        var playPauseButton = document.getElementById('play');
+        playPauseButton.addEventListener("click", function() {
             if(nextStepButton.hasAttribute('disabled')){
                 nextStepButton.removeAttribute('disabled');
-                statusIndicator.innerText = '(Paused)';
+                playPauseButton.className = "fa fa-play";
             }else{
                 nextStepButton.setAttribute('disabled', true);
-                statusIndicator.innerText = '(Playing)';
+                playPauseButton.className = "fa fa-pause";
             }
             app.ports.toggleLive.send("");
         });
@@ -173,7 +174,6 @@
         var brushRadios = document.querySelectorAll('input[type=radio][name="brush"]');
 
         var brushChangeHandler = function(event) {
-            console.log("radio", this.value);
             app.ports.ship.send(this.value);
         }
 
