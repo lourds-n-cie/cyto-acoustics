@@ -200,7 +200,7 @@ gunDOWN = [(1,5), (1,6), (2,5), (2,6), (11,5), (11,6), (11,7), (12,4), (12,8), (
 
 
 -- Dict String Structure
-ships = Dict.fromList [("Glider UP", rotateLeft (rotateLeft gliderDOWN)), ("Glider DOWN", gliderDOWN), ("Glider LEFT", rotateRight gliderDOWN), ("Glider RIGHT", rotateLeft gliderDOWN),
+ships = Dict.fromList [("Glider NE", rotateLeft (rotateLeft gliderDOWN)), ("Glider SW", gliderDOWN), ("Glider NW", rotateRight gliderDOWN), ("Glider SE", rotateLeft gliderDOWN),
             ("Gun UP", rotateLeft (rotateLeft gunDOWN)), ("Gun DOWN", gunDOWN), ("Gun LEFT", rotateRight gunDOWN), ("Gun RIGHT", rotateLeft gunDOWN)]
 
 
