@@ -66,6 +66,11 @@ button {
     border-radius: 3px;
 }
 
+button:hover
+{
+  background-color: white;
+}
+
 section {
 	margin-top: 20px;
 	margin-bottom: 10px;
@@ -87,6 +92,10 @@ button > i {
 .modeControl {
 	margin-bottom: 10px;
 	margin-top: 10px;
+}
+
+small{
+    padding: 4px;
 }
 
 
@@ -241,8 +250,14 @@ button > i {
 
 .patternradio + label{
     background-color: #4A4848;
+    border: 1px solid #4A4848;
 }
 
 .patternradio:checked + label{
     background-color: #F5B400;
+}
+
+.patternradio + label:hover
+{
+    border: 1px solid #F5B400;
 }

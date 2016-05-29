@@ -17,171 +17,18 @@
     </header>
     <a href="https://github.com/lourds-n-cie/cyto-acoustics"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/652c5b9acfaddf3a9c326fa6bde407b87f7be0f4/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67"
             alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"></a>
-    <div class="container">
-        <div class="col col1-3">
-            <form autocomplete="off" method="GET">
-                <section>
-                    <h3>Grid</h3>
-                    <button id="randomize" type="button"><i>⟳</i> Generate new random grid</button>
-                    <button id="clear" type="button">Clear</button>
-                    <div class="modeControl">
-                        <div class="onoffswitch">
-                            <input type="checkbox" name="playAllNotes" class="onoffswitch-checkbox" id="playAllNotesToggle">
-                            <label class="onoffswitch-label" for="playAllNotesToggle">
-                                <span class="onoffswitch-inner"></span>
-                                <span class="onoffswitch-switch"></span>
-                            </label>
-                        </div>
-                        <small id="hintModeDiff"><em>Play only sound of new cells</em></small>
-                        <small id="hintModeFull" style="display:none;"><em>Play sound for all cells</em></small>
-                    </div>
-                    <label for "gridSizeSelector">Size : </label>
-                    <select id="gridSizeSelector" name="gridSize">
-                        <option value="8">8 &times; 8</option>
-                        <option value="16">16 &times; 16</option>
-                        <option value="24">24 &times; 24 (default)</option>
-                        <option value="32">32 &times; 32</option>
-                        <option value="48">48 &times; 48 (slow)</option>
-                        <option value="64">64 &times; 64 (dead slow)</option>
-                    </select>
-                </section>
-                <section>
-                    <h3>Iterations</h3>
-                    <div class="controller">
-                        Auto : <button id="play" type="button" class="fa fa-play"></button><br/>
-                        Step-by-step : <button id="nextStep" type="button" class="fa fa-step-forward"></button>
-                    </div>
-                </section>
-                <section >
-                    <h3>Theremin</h4>
-                    <div class="onoffswitch">
-                        <input type="checkbox" name="thereminswitch" class="onoffswitch-checkbox" id="thereminswitch">
-                        <label class="onoffswitch-label" for="thereminswitch">
-                            <span class="onoffswitch-inner"></span>
-                            <span class="onoffswitch-switch"></span>
-                        </label>
-                    </div>
-                    <small id="hintThereminOff">Moving the mouse has no effect on the sound</small>
-                    <small id="hintThereminOn" style="display:none;">Move the mouse to modulate the sounds</small>
-                </section>
-                <section class="brush">
-                    <h3>Patterns</h3>
-                    <small><em>What will be drawn on the grid when you click</em></small>
-                    <div class="radio-group">
-                        <h4>Cells</h4>
-                        <input type="radio" name="brush" value="None" class="patternradio" id="patternsingle" checked><label class="pattern-selector" for="patternsingle">1 cell</label>
-                    </div>
-                    <div class="radio-group">
-                        <h4>Gliders</h4>
-                        <input type="radio" name="brush" value="Glider NE" class="patternradio" id="patterngu" ><label class="pattern-selector" for="patterngu">↗</label>
-                        <input type="radio" name="brush" value="Glider SE" class="patternradio" id="patterngr" ><label class="pattern-selector" for="patterngr">↘</label>
-                        <input type="radio" name="brush" value="Glider SW" class="patternradio" id="patterngd" ><label class="pattern-selector" for="patterngd">↙</label>
-                        <input type="radio" name="brush" value="Glider NW" class="patternradio" id="patterngl" ><label class="pattern-selector" for="patterngl">↖</label>
-                    </div>
-                    <div class="radio-group">
-                        <h4>Guns</h4>
-                        <input type="radio" name="brush" value="Gun UP" class="patternradio" id="patternguu" ><label class="pattern-selector" for="patternguu">↑</label>
-                        <input type="radio" name="brush" value="Gun RIGHT" class="patternradio" id="patterngur" ><label class="pattern-selector" for="patterngur">→</label>
-                        <input type="radio" name="brush" value="Gun DOWN" class="patternradio" id="patterngud" ><label class="pattern-selector" for="patterngud">↓</label>
-                        <input type="radio" name="brush" value="Gun LEFT" class="patternradio" id="patterngul" ><label class="pattern-selector" for="patterngul">←</label>
-                    </div>
-                </section>
-            </form>
-        </div>
-        <div class="col col2-3">
-            <div id="matrix" class="matrix">Loading ...</div>
-        </div>
+    <div id="root" >Loading ...
     </div>
     <script type="text/javascript" src="target/cyto-acoustics.js"></script>
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function() {
-        var matrix = document.getElementById('matrix');
-        // remove loading message
-        matrix.innerHTML = '';
+        
         var gridSize = Number.parseInt(getParameterByName('gridSize'), 10) || 24;
         
-        var gridSizeSelector = document.getElementById('gridSizeSelector');
-        gridSizeSelector.value = gridSize.toString();
-        gridSizeSelector.addEventListener('change', function(){
-           this.form.submit();
-        });
-
-        var app = Elm.Cytoacoustics.embed(matrix, gridSize);
-
-        // Randomize action
-        document.getElementById('randomize').addEventListener("click", function() {
-            app.ports.randomize.send(0);
-        });
-
-        // Clear action
-        document.getElementById('clear').addEventListener("click", function() {
-            app.ports.clear.send(0);
-        });
-
-        // diff vs. full play
-        var playAllNotesToggle = document.getElementById('playAllNotesToggle');
-        playAllNotesToggle.addEventListener("click", function() {
-            var fullHint = document.getElementById('hintModeFull');
-            var diffHint = document.getElementById('hintModeDiff');
-            if (playAllNotesToggle.checked) {
-                app.ports.switchMode.send("Full");
-                fullHint.style.display = 'inline';
-                diffHint.style.display = 'none';
-            } else {
-                app.ports.switchMode.send("Diff");
-                fullHint.style.display = 'none';
-                diffHint.style.display = 'inline';
-            }
-        });
-
-        // theremin mode
-        var thereminSwitch = document.getElementById('thereminswitch');
-        thereminSwitch.addEventListener("click", function() {
-            var onHint = document.getElementById('hintThereminOn');
-            var offHint = document.getElementById('hintThereminOff');
-            if (thereminSwitch.checked) {
-                onHint.style.display = 'inline';
-                offHint.style.display = 'none';
-            } else {
-                onHint.style.display = 'none';
-                offHint.style.display = 'inline';
-            }
-            app.ports.toggleTheremin.send("");
-        });
-
-
-        //next generation -- START
-        var nextStepButton = document.getElementById('nextStep');
-        nextStepButton.addEventListener("click", function() {
-            app.ports.nextStep.send("");
-        });
-
-        var playPauseButton = document.getElementById('play');
-        playPauseButton.addEventListener("click", function() {
-            if(nextStepButton.hasAttribute('disabled')){
-                nextStepButton.removeAttribute('disabled');
-                playPauseButton.className = "fa fa-play";
-            }else{
-                nextStepButton.setAttribute('disabled', true);
-                playPauseButton.className = "fa fa-pause";
-            }
-            app.ports.toggleLive.send("");
-        });
-        // next generation -- END
-
-        // patterns -- START
-        
-        var brushRadios = document.querySelectorAll('input[type=radio][name="brush"]');
-
-        var brushChangeHandler = function(event) {
-            app.ports.ship.send(this.value);
-        }
-
-        Array.prototype.forEach.call(brushRadios, function(radio) {
-            radio.addEventListener('change', brushChangeHandler);
-        });
-        
-        // patterns -- END
+        var rootNode = document.getElementById('root');
+        var app = Elm.Cytoacoustics.embed(rootNode, gridSize);
+        // remove loading message
+        rootNode.innerHTML = '';
         
         var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -229,10 +76,10 @@
           gain.gain.value = currentGain;
         };
 
-        app.ports.audio.subscribe(subscriber);
+        app.ports.modulation.subscribe(subscriber);
 
         oscillator.onended = function() {
-          app.ports.audio.unsubscribe(subscriber);
+          app.ports.modulation.unsubscribe(subscriber);
         };
 
         result.push(oscillator);
