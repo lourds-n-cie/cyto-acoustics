@@ -51,7 +51,7 @@ update msg model =
 
 notifyAudio : Model -> (Model, Cmd Msg)
 notifyAudio model =
-  (model, modulation (Debug.log "normed" (normed model.mousePosition model.screenSize)))
+  (model, modulation (normed model.mousePosition model.screenSize))
 
 
 normed : Position -> Size -> NormedMousePosition
