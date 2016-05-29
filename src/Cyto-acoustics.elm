@@ -235,7 +235,7 @@ view model =
         , class "matrix"
         ]
         [ Html.map GridMsg (GameGrid.view model.grid) ]
-        ]
+      ]
     ]
 
 
