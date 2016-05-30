@@ -6,6 +6,8 @@ This is the result of a short hackathon, which theme/goal was defined as "Let's 
 
 Most of the code is Elm, but for some bits of html and the webaudio part.
 
+Tested on chrome/chromium and firefox.
+
 ## Build
 
 ```shell
