@@ -12,6 +12,12 @@ Most of the code is Elm, but for some bits of html and the webaudio part.
 elm-make src/Cyto-acoustics.elm --output target/cyto-acoustics.js
 ```
 
+or, for Windows users,
+
+```
+make.bat
+```
+
 Then open index.html
 
 ## Live demo
