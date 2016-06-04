@@ -32,7 +32,7 @@ update : Msg -> Model -> (Model, List (Int, Float), List (Int, Float))
 update msg model =
   case msg of
     NextGeneration ->
-      matrixUpdate model (nextGenerationPlus)
+      matrixUpdate model nextGenerationPlus
 
     ToggleCell row col ->
       case model.pattern of

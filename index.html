@@ -23,87 +23,87 @@
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function() {
         
-        var gridSize = Number.parseInt(getParameterByName('gridSize'), 10) || 24;
-        
-        var rootNode = document.getElementById('root');
-        var app = Elm.Cytoacoustics.embed(rootNode, gridSize);
-        // remove loading message
-        rootNode.innerHTML = '';
-        
-        var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            var gridSize = Number.parseInt(getParameterByName('gridSize'), 10) || 24;
+            
+            var rootNode = document.getElementById('root');
+            var app = Elm.Cytoacoustics.embed(rootNode, gridSize);
+            // remove loading message
+            rootNode.innerHTML = '';
+            
+            var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        app.ports.newCells.subscribe(function(newCells) {
-            var osc = createOscillatorsForCoords(app, audioCtx, gridSize, newCells);
-            startOscillators(audioCtx, osc, 0.2);
+            app.ports.newCells.subscribe(function(newCells) {
+                var osc = createOscillatorsForCoords(app, audioCtx, gridSize, newCells);
+                startOscillators(audioCtx, osc, 0.2);
+            });
         });
-    });
 
-    var currentGain = 1;
-    var currentBaseFreqMod = 1;
+        var currentGain = 1;
+        var currentBaseFreqMod = 1;
 
-    function createOscillatorsForCoords(app, audioCtx, gridSize, coordsArray){
-      var result = [];
+        function createOscillatorsForCoords(app, audioCtx, gridSize, coordsArray){
+          var result = [];
 
-      coordsArray.forEach(function(element, index, array){
-        var stereoPanning = element[1];
+          coordsArray.forEach(function(element, index, array){
+            var stereoPanning = element[1];
 
-        var baseFrequency = 55; // A 55 Hz
-        var y = gridSize - element[0];
-        var frequency = baseFrequency * y;
+            var baseFrequency = 55; // A 55 Hz
+            var y = gridSize - element[0];
+            var frequency = baseFrequency * y;
 
-        //console.log({x : x, y:y, frequency : frequency, pan: stereoPanning})
+            //console.log({x : x, y:y, frequency : frequency, pan: stereoPanning})
 
-        // create Oscillator node
-        var oscillator = audioCtx.createOscillator();
-        oscillator.type = 'sine';
-        oscillator.frequency.value = currentBaseFreqMod * frequency; // value in hertz
+            // create Oscillator node
+            var oscillator = audioCtx.createOscillator();
+            oscillator.type = 'sine';
+            oscillator.frequency.value = currentBaseFreqMod * frequency; // value in hertz
 
-        var gain = audioCtx.createGain();
-        gain.gain.value = currentGain;
+            var gain = audioCtx.createGain();
+            gain.gain.value = currentGain;
 
-        // add a stereo panner to move sound left or right
-        var panNode = audioCtx.createStereoPanner();
-        panNode.pan.value = stereoPanning;
-        oscillator.connect(gain);
-        gain.connect(panNode);
+            // add a stereo panner to move sound left or right
+            var panNode = audioCtx.createStereoPanner();
+            panNode.pan.value = stereoPanning;
+            oscillator.connect(gain);
+            gain.connect(panNode);
 
-        panNode.connect(audioCtx.destination);
+            panNode.connect(audioCtx.destination);
 
-        var subscriber = function(scalings) {
-          currentBaseFreqMod = Math.pow(2, scalings.x * 3);
-          oscillator.frequency.value = currentBaseFreqMod * frequency;
-          currentGain = scalings.y * scalings.y;
-          gain.gain.value = currentGain;
-        };
+            var subscriber = function(scalings) {
+              currentBaseFreqMod = Math.pow(2, scalings.x * 3);
+              oscillator.frequency.value = currentBaseFreqMod * frequency;
+              currentGain = scalings.y * scalings.y;
+              gain.gain.value = currentGain;
+            };
 
-        app.ports.modulation.subscribe(subscriber);
+            app.ports.modulation.subscribe(subscriber);
 
-        oscillator.onended = function() {
-          app.ports.modulation.unsubscribe(subscriber);
-        };
+            oscillator.onended = function() {
+              app.ports.modulation.unsubscribe(subscriber);
+            };
 
-        result.push(oscillator);
-      });
+            result.push(oscillator);
+          });
 
-      return result;
-    }
+          return result;
+        }
 
-    function startOscillators(audioCtx, oscillators, noteDuration){
-        oscillators.forEach(function(oscillator) {
-            oscillator.start();
-            oscillator.stop(audioCtx.currentTime + noteDuration);
-        });
-    }
+        function startOscillators(audioCtx, oscillators, noteDuration){
+            oscillators.forEach(function(oscillator) {
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + noteDuration);
+            });
+        }
 
-    function getParameterByName(name, url) {
-        if (!url) url = window.location.href;
-        name = name.replace(/[\[\]]/g, "\\$&");
-        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-            results = regex.exec(url);
-        if (!results) return null;
-        if (!results[2]) return '';
-        return decodeURIComponent(results[2].replace(/\+/g, " "));
-    }
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
     </script>
 </body>
 
