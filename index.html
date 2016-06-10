@@ -61,13 +61,18 @@
             var gain = audioCtx.createGain();
             gain.gain.value = currentGain;
 
-            // add a stereo panner to move sound left or right
-            var panNode = audioCtx.createStereoPanner();
-            panNode.pan.value = stereoPanning;
             oscillator.connect(gain);
-            gain.connect(panNode);
 
-            panNode.connect(audioCtx.destination);
+            // add a stereo panner to move sound left or right
+            if(audioCtx.createStereoPanner){ // not supported in Safari
+              var panNode = audioCtx.createStereoPanner();
+              panNode.pan.value = stereoPanning;
+              
+              gain.connect(panNode);
+              panNode.connect(audioCtx.destination);
+            }else{
+              gain.connect(audioCtx.destination);
+            }
 
             var subscriber = function(scalings) {
               currentBaseFreqMod = Math.pow(2, scalings.x * 3);
